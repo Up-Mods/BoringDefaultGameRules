@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "io.github.ennuil.boringdefaultgamerules.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "BoundedIntRuleAccessor",
+    "DoubleRuleAccessor",
+    "EnumRuleAccessor",
+    "GameRulesMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
