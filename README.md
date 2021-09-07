@@ -11,7 +11,6 @@ This mod is available for download on the following services:
 - [Modrinth (recommended)](https://modrinth.com/mod/boring-default-game-rules)
 - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/boring-default-game-rules)
 - [GitHub Releases (alternative)](https://github.com/EnnuiL/BoringDefaultGameRules/releases)
--->
 
 ## Usage
 
