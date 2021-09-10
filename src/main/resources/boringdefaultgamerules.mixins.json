@@ -8,6 +8,9 @@
     "EnumRuleAccessor",
     "GameRulesMixin"
   ],
+  "server": [
+    "MainMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

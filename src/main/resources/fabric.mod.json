@@ -17,7 +17,6 @@
   "environment": "*",
   "entrypoints": {
     "client": ["io.github.ennuil.boringdefaultgamerules.BoringDefaultGameRulesClientMod"],
-    "server": ["io.github.ennuil.boringdefaultgamerules.BoringDefaultGameRulesServerMod"],
     "modmenu": ["io.github.ennuil.boringdefaultgamerules.modmenu.BoringDefaultGameRulesModMenuEntry"]
   },
   "mixins": [

@@ -15,7 +15,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import io.github.ennuil.boringdefaultgamerules.BoringDefaultGameRulesServerMod;
 import io.github.ennuil.boringdefaultgamerules.mixin.BoundedIntRuleAccessor;
 import io.github.ennuil.boringdefaultgamerules.mixin.DoubleRuleAccessor;
 import io.github.ennuil.boringdefaultgamerules.mixin.EnumRuleAccessor;
