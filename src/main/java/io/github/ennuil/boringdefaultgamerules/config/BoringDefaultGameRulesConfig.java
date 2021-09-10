@@ -25,8 +25,8 @@ import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 import net.fabricmc.fabric.impl.gamerule.rule.BoundedIntRule;
 import net.fabricmc.fabric.mixin.gamerule.GameRulesAccessor;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Language;
 import net.minecraft.world.GameRules;
 
 public class BoringDefaultGameRulesConfig {
@@ -93,9 +93,11 @@ public class BoringDefaultGameRulesConfig {
     private static void generateGameRuleProperties() {
         defaultGameRulesProperties = new JsonObject();
         GameRules.accept(new FabricGameRuleVisitor() {
+            Language language = Language.getInstance();
+
             @Override
             public void visitBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
-                addBooleanGameRule(key.getName(), I18n.translate(key.getTranslationKey()), type.createRule().get());
+                addBooleanGameRule(key.getName(), language.get(key.getTranslationKey()), type.createRule().get());
             }
 
             @Override
@@ -103,9 +105,9 @@ public class BoringDefaultGameRulesConfig {
                 if (type.createRule() instanceof BoundedIntRule boundedType) {
                     int minimum = ((BoundedIntRuleAccessor)(Object) boundedType).getMinimumValue();
                     int maximum = ((BoundedIntRuleAccessor)(Object) boundedType).getMaximumValue();
-                    addIntegerGameRule(key.getName(), I18n.translate(key.getTranslationKey()), boundedType.get(), Optional.of(minimum), Optional.of(maximum));
+                    addIntegerGameRule(key.getName(), language.get(key.getTranslationKey()), boundedType.get(), Optional.of(minimum), Optional.of(maximum));
                 } else {
-                    addIntegerGameRule(key.getName(), I18n.translate(key.getTranslationKey()), type.createRule().get(), Optional.empty(), Optional.empty());
+                    addIntegerGameRule(key.getName(), language.get(key.getTranslationKey()), type.createRule().get(), Optional.empty(), Optional.empty());
                 }
             }
 
@@ -114,13 +116,13 @@ public class BoringDefaultGameRulesConfig {
                 DoubleRule doubleRule = type.createRule();
                 double maximum = ((DoubleRuleAccessor)(Object) doubleRule).getMaximumValue();
                 double minimum = ((DoubleRuleAccessor)(Object) doubleRule).getMinimumValue();
-                addDoubleGameRule(key.getName(), I18n.translate(key.getTranslationKey()), doubleRule.get(), minimum, maximum);
+                addDoubleGameRule(key.getName(), language.get(key.getTranslationKey()), doubleRule.get(), minimum, maximum);
             }
 
             @Override
             public <E extends Enum<E>> void visitEnum(GameRules.Key<EnumRule<E>> key, GameRules.Type<EnumRule<E>> type) {
                 EnumRule<E> enumRule = type.createRule();
-                addEnumGameRule(key.getName(), I18n.translate(key.getTranslationKey()), enumRule.get(), ((EnumRuleAccessor<E>)(Object) enumRule).getSupportedValues());
+                addEnumGameRule(key.getName(), language.get(key.getTranslationKey()), enumRule.get(), ((EnumRuleAccessor<E>)(Object) enumRule).getSupportedValues());
             }
         });
     }
