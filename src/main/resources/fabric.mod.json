@@ -8,14 +8,16 @@
     "EnnuiL"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/boring-default-game-rules",
-    "sources": "https://github.com/"
+    "homepage": "https://modrinth.com/mod/boring-default-game-rules",
+    "issues": "https://github.com/EnnuiL/BoringDefaultGameRules/issues",
+    "sources": "https://github.com/EnnuiL/BoringDefaultGameRules"
   },
   "license": "MIT",
   "icon": "assets/boringdefaultgamerules/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": ["io.github.ennuil.boringdefaultgamerules.BoringDefaultGameRulesMod"],
+    "client": ["io.github.ennuil.boringdefaultgamerules.BoringDefaultGameRulesClientMod"],
+    "server": ["io.github.ennuil.boringdefaultgamerules.BoringDefaultGameRulesServerMod"],
     "modmenu": ["io.github.ennuil.boringdefaultgamerules.modmenu.BoringDefaultGameRulesModMenuEntry"]
   },
   "mixins": [

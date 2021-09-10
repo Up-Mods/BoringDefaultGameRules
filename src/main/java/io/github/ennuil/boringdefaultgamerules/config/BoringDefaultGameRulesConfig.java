@@ -15,10 +15,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import io.github.ennuil.boringdefaultgamerules.BoringDefaultGameRulesMod;
+import io.github.ennuil.boringdefaultgamerules.BoringDefaultGameRulesServerMod;
 import io.github.ennuil.boringdefaultgamerules.mixin.BoundedIntRuleAccessor;
 import io.github.ennuil.boringdefaultgamerules.mixin.DoubleRuleAccessor;
 import io.github.ennuil.boringdefaultgamerules.mixin.EnumRuleAccessor;
+import io.github.ennuil.boringdefaultgamerules.utils.LoggingUtils;
 import net.fabricmc.fabric.api.gamerule.v1.FabricGameRuleVisitor;
 import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
@@ -50,7 +51,7 @@ public class BoringDefaultGameRulesConfig {
                 schemaReader.close();
 
                 if (!schemaHash.equals(newSchemaHash)) {
-                    BoringDefaultGameRulesMod.modLogger.info("The loaded set of game rules doesn't match the current schema's ones! This schema will be regenerated unless the config says to not generate schemas.");
+                    LoggingUtils.modLogger.info("The loaded set of game rules doesn't match the current schema's ones! This schema will be regenerated unless the config says to not generate schemas.");
                     generateNewSchema = true;
                 }
             } else {
@@ -75,11 +76,11 @@ public class BoringDefaultGameRulesConfig {
 
             if (generateNewSchema) {
                 if (!Files.isDirectory(SCHEMA_DIRECTORY_PATH)) {
-                    BoringDefaultGameRulesMod.modLogger.info("A schema folder hasn't been found! Creating one...");
+                    LoggingUtils.modLogger.info("A schema folder hasn't been found! Creating one...");
                     Files.createDirectory(SCHEMA_DIRECTORY_PATH);
                 }
                 
-                BoringDefaultGameRulesMod.modLogger.info("Generating a new JSON schema...");
+                LoggingUtils.modLogger.info("Generating a new JSON schema...");
                 generateGameRuleProperties();
                 Writer schemaWriter = Files.newBufferedWriter(SCHEMA_PATH, StandardCharsets.UTF_8);
                 gson.toJson(createSchemaObject(newSchemaHash), schemaWriter);
