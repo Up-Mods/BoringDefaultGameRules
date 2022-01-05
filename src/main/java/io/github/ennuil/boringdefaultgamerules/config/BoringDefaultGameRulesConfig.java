@@ -30,9 +30,9 @@ import net.minecraft.util.Language;
 import net.minecraft.world.GameRules;
 
 public class BoringDefaultGameRulesConfig {
-    public static Path SCHEMA_DIRECTORY_PATH = FabricLoader.getInstance().getConfigDir().resolve("schema");
-    public static Path SCHEMA_PATH = SCHEMA_DIRECTORY_PATH.resolve("boringdefaultgamerules.schema.json");
-    public static Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("boringdefaultgamerules.json");
+    public static final Path SCHEMA_DIRECTORY_PATH = FabricLoader.getInstance().getConfigDir().resolve("schema");
+    public static final Path SCHEMA_PATH = SCHEMA_DIRECTORY_PATH.resolve("boringdefaultgamerules.schema.json");
+    public static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("boringdefaultgamerules.json");
 
     private static JsonObject defaultGameRulesProperties;
     private static String newSchemaHash = "";
