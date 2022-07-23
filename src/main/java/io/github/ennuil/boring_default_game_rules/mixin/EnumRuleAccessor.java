@@ -1,4 +1,4 @@
-package io.github.ennuil.boringdefaultgamerules.mixin;
+package io.github.ennuil.boring_default_game_rules.mixin;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 public interface EnumRuleAccessor<E extends Enum<E>> {
     @Accessor
     List<E> getSupportedValues();
-    
+
     @Accessor
     void setSupportedValues(List<E> supportedValues);
 }

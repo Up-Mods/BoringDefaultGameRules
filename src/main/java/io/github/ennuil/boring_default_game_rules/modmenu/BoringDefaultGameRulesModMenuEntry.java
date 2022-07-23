@@ -1,4 +1,4 @@
-package io.github.ennuil.boringdefaultgamerules.modmenu;
+package io.github.ennuil.boring_default_game_rules.modmenu;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

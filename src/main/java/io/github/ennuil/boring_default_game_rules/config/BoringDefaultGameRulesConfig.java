@@ -1,4 +1,4 @@
-package io.github.ennuil.boringdefaultgamerules.config;
+package io.github.ennuil.boring_default_game_rules.config;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -9,30 +9,31 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
+import org.quiltmc.loader.api.QuiltLoader;
+
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import io.github.ennuil.boringdefaultgamerules.mixin.BoundedIntRuleAccessor;
-import io.github.ennuil.boringdefaultgamerules.mixin.DoubleRuleAccessor;
-import io.github.ennuil.boringdefaultgamerules.mixin.EnumRuleAccessor;
-import io.github.ennuil.boringdefaultgamerules.utils.LoggingUtils;
+import io.github.ennuil.boring_default_game_rules.mixin.BoundedIntRuleAccessor;
+import io.github.ennuil.boring_default_game_rules.mixin.DoubleRuleAccessor;
+import io.github.ennuil.boring_default_game_rules.mixin.EnumRuleAccessor;
+import io.github.ennuil.boring_default_game_rules.utils.LoggingUtils;
 import net.fabricmc.fabric.api.gamerule.v1.FabricGameRuleVisitor;
 import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 import net.fabricmc.fabric.impl.gamerule.rule.BoundedIntRule;
 import net.fabricmc.fabric.mixin.gamerule.GameRulesAccessor;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Language;
 import net.minecraft.world.GameRules;
 
 public class BoringDefaultGameRulesConfig {
-    public static final Path SCHEMA_DIRECTORY_PATH = FabricLoader.getInstance().getConfigDir().resolve("schema");
+    public static final Path SCHEMA_DIRECTORY_PATH = QuiltLoader.getConfigDir().resolve("schema");
     public static final Path SCHEMA_PATH = SCHEMA_DIRECTORY_PATH.resolve("boringdefaultgamerules.schema.json");
-    public static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("boringdefaultgamerules.json");
+    public static final Path CONFIG_PATH = QuiltLoader.getConfigDir().resolve("boringdefaultgamerules.json");
 
     private static JsonObject defaultGameRulesProperties;
     private static String newSchemaHash = "";
@@ -42,7 +43,7 @@ public class BoringDefaultGameRulesConfig {
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             boolean generateNewSchema = false;
-            
+
             if (SCHEMA_PATH.toFile().exists()) {
                 Reader schemaReader = Files.newBufferedReader(SCHEMA_PATH, StandardCharsets.UTF_8);
                 JsonObject schemaJson = JsonHelper.deserialize(gson, schemaReader, JsonObject.class, true);
@@ -50,7 +51,7 @@ public class BoringDefaultGameRulesConfig {
                 schemaReader.close();
 
                 if (!schemaHash.equals(newSchemaHash)) {
-                    LoggingUtils.modLogger.info("The loaded set of game rules doesn't match the current schema's ones! This schema will be regenerated unless the config says to not generate schemas.");
+                    LoggingUtils.LOGGER.info("The loaded set of game rules doesn't match the current schema's ones! This schema will be regenerated unless the config says to not generate schemas.");
                     generateNewSchema = true;
                 }
             } else {
@@ -75,11 +76,11 @@ public class BoringDefaultGameRulesConfig {
 
             if (generateNewSchema) {
                 if (!Files.isDirectory(SCHEMA_DIRECTORY_PATH)) {
-                    LoggingUtils.modLogger.info("A schema folder hasn't been found! Creating one...");
+                    LoggingUtils.LOGGER.info("A schema folder hasn't been found! Creating one...");
                     Files.createDirectory(SCHEMA_DIRECTORY_PATH);
                 }
-                
-                LoggingUtils.modLogger.info("Generating a new JSON schema...");
+
+                LoggingUtils.LOGGER.info("Generating a new JSON schema...");
                 generateGameRuleProperties();
                 Writer schemaWriter = Files.newBufferedWriter(SCHEMA_PATH, StandardCharsets.UTF_8);
                 gson.toJson(createSchemaObject(newSchemaHash), schemaWriter);
@@ -122,7 +123,7 @@ public class BoringDefaultGameRulesConfig {
             @Override
             public <E extends Enum<E>> void visitEnum(GameRules.Key<EnumRule<E>> key, GameRules.Type<EnumRule<E>> type) {
                 EnumRule<E> enumRule = type.createRule();
-                addEnumGameRule(key.getName(), language.get(key.getTranslationKey()), enumRule.get(), ((EnumRuleAccessor<E>)(Object) enumRule).getSupportedValues());
+                addEnumGameRule(key.getName(), language.get(key.getTranslationKey()), enumRule.get(), ((EnumRuleAccessor<E>) (Object) enumRule).getSupportedValues());
             }
         });
     }
@@ -178,7 +179,7 @@ public class BoringDefaultGameRulesConfig {
         integerGameRuleObject.addProperty("title", name);
         integerGameRuleObject.addProperty("description", description);
         integerGameRuleObject.addProperty("default", defaultValue);
-        
+
         if (!minimum.isEmpty() && minimum.get() != Integer.MIN_VALUE) {
             integerGameRuleObject.addProperty("minimum", minimum.get());
         }
@@ -214,7 +215,7 @@ public class BoringDefaultGameRulesConfig {
         doubleGameRuleObject.addProperty("title", name);
         doubleGameRuleObject.addProperty("description", description);
         doubleGameRuleObject.addProperty("default", defaultValue.name());
-        
+
         JsonArray supportedEnumValues = new JsonArray();
         for (E supportedValue : supportedValues) {
             supportedEnumValues.add(supportedValue.name());

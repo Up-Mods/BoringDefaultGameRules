@@ -1,4 +1,4 @@
-package io.github.ennuil.boringdefaultgamerules.mixin;
+package io.github.ennuil.boring_default_game_rules.mixin;
 
 import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import io.github.ennuil.boringdefaultgamerules.config.BoringDefaultGameRulesConfig;
+import io.github.ennuil.boring_default_game_rules.config.BoringDefaultGameRulesConfig;
 
 @Mixin(GameRules.class)
 public class GameRulesMixin {

@@ -1,0 +1,42 @@
+{
+	"schema_version": 1,
+	"quilt_loader": {
+		"group": "io.github.ennuil",
+		"id": "boring_default_game_rules",
+		"version": "${version}",
+		"metadata": {
+			"name": "Boring Default Game Rules",
+			"description": "A mod that lets you override the default game rule values. You can configure it by editing the config file (located at .minecraft/config/boringdefaultgamerules.json), which is simple and painless thanks to JSON Schemas, and reload it by clicking the mod's button in Mod Menu.",
+			"contributors": {
+				"Ennui Langeweile": "Owner"
+			},
+			"contact": {
+				"homepage": "https://modrinth.com/mod/boring-default-game-rules",
+				"issues": "https://github.com/EnnuiL/BoringDefaultGameRules/issues",
+				"sources": "https://github.com/EnnuiL/BoringDefaultGameRules"
+			},
+			"icon": "assets/boring_default_game_rules/icon.png",
+			"license": "MIT"
+		},
+		"intermediate_mappings": "net.fabricmc:intermediary",
+		"entrypoints": {
+			"client_event": "io.github.ennuil.boring_default_game_rules.events.LoadConfigEvent",
+			"modmenu": "io.github.ennuil.boring_default_game_rules.modmenu.BoringDefaultGameRulesModMenuEntry"
+		},
+		"depends": [
+			{
+				"id": "quilt_loader",
+				"versions": ">=0.17.0-"
+			},
+			{
+				"id": "quilted_fabric_api",
+				"versions": ">=2.0.0-"
+			},
+			{
+				"id": "minecraft",
+				"versions": ">=1.19"
+			}
+		]
+	},
+	"mixin": "boring_default_game_rules.mixins.json"
+}
