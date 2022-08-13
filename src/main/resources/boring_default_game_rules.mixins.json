@@ -6,8 +6,10 @@
   "mixins": [
     "BoundedIntRuleAccessor",
     "DoubleRuleAccessor",
+    "EditGameRulesScreenAccessor",
     "EnumRuleAccessor",
-    "GameRulesMixin"
+    "GameRulesMixin",
+    "ScreenAccessor"
   ],
   "server": [
     "MainMixin"

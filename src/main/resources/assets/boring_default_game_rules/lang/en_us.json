@@ -1,4 +1,4 @@
 {
-    "toast.boring_default_game_rules.title": "Boring Default Game Rules",
-    "toast.boring_default_game_rules.reload": "Successfully reloaded the defaults"
+  "boring_default_game_rules.edit_default_game_rules.title": "Edit Default Game Rules",
+  "boring_default_game_rules.edit_default_game_rules.reset_to_default": "Reset to Default"
 }

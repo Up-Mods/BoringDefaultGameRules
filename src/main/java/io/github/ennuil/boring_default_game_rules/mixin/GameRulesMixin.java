@@ -28,8 +28,10 @@ public class GameRulesMixin {
 		method = "<init>()V"
 	)
 	private <E extends Enum<E>> void overrideDefaults(CallbackInfo info) {
+		if (BoringDefaultGameRulesConfig.defaultGameRulesJson.size() == 0) return;
+
 		this.rules.forEach((key, rule) -> {
-			BoringDefaultGameRulesConfig.defaultGameRules.entrySet().forEach(entry -> {
+			BoringDefaultGameRulesConfig.defaultGameRulesJson.entrySet().forEach(entry -> {
 				if (key.getName().equals(entry.getKey())) {
 					if (rule instanceof IntRule intRule) {
 						intRule.set(entry.getValue().getAsInt(), null);

@@ -1,4 +1,3 @@
 {
-    "toast.boring_default_game_rules.title": "Boring Default Game Rules",
-    "toast.boring_default_game_rules.reload": "Os padrões foram recarregados com sucesso"
+  "boring_default_game_rules.edit_default_game_rules.title": "Edit Default Game Rules"
 }

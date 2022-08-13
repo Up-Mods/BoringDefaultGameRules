@@ -29,24 +29,28 @@ import net.fabricmc.fabric.mixin.gamerule.GameRulesAccessor;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Language;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.GameRules.BooleanRule;
+import net.minecraft.world.GameRules.IntRule;
+import net.minecraft.world.GameRules.Key;
+import net.minecraft.world.GameRules.Type;
 
 public class BoringDefaultGameRulesConfig {
     public static final Path SCHEMA_DIRECTORY_PATH = QuiltLoader.getConfigDir().resolve("schema");
     public static final Path SCHEMA_PATH = SCHEMA_DIRECTORY_PATH.resolve("boringdefaultgamerules.schema.json");
     public static final Path CONFIG_PATH = QuiltLoader.getConfigDir().resolve("boringdefaultgamerules.json");
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static JsonObject defaultGameRulesProperties;
     private static String newSchemaHash = "";
-    public static JsonObject defaultGameRules = new JsonObject();
+    public static JsonObject defaultGameRulesJson = new JsonObject();
 
     public static void loadOrCreateConfig() {
         try {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             boolean generateNewSchema = false;
 
             if (SCHEMA_PATH.toFile().exists()) {
                 Reader schemaReader = Files.newBufferedReader(SCHEMA_PATH, StandardCharsets.UTF_8);
-                JsonObject schemaJson = JsonHelper.deserialize(gson, schemaReader, JsonObject.class, true);
+                JsonObject schemaJson = JsonHelper.deserialize(GSON, schemaReader, JsonObject.class, true);
                 String schemaHash = schemaJson.get("gameRulesHash").getAsString();
                 schemaReader.close();
 
@@ -60,8 +64,8 @@ public class BoringDefaultGameRulesConfig {
 
             if (CONFIG_PATH.toFile().exists()) {
                 Reader reader = Files.newBufferedReader(CONFIG_PATH, StandardCharsets.UTF_8);
-                JsonObject json = JsonHelper.deserialize(gson, reader, JsonObject.class, true);
-                defaultGameRules = json.get("default_game_rules").getAsJsonObject();
+                JsonObject json = JsonHelper.deserialize(GSON, reader, JsonObject.class, true);
+                defaultGameRulesJson = json.get("default_game_rules").getAsJsonObject();
                 generateNewSchema = json.get("generate_json_schema").getAsBoolean() ? generateNewSchema : false;
                 reader.close();
             } else {
@@ -70,7 +74,7 @@ public class BoringDefaultGameRulesConfig {
                 configObject.add("default_game_rules", new JsonObject());
                 configObject.addProperty("generate_json_schema", true);
                 Writer configWriter = Files.newBufferedWriter(CONFIG_PATH, StandardCharsets.UTF_8);
-                gson.toJson(configObject, configWriter);
+                GSON.toJson(configObject, configWriter);
                 configWriter.close();
             }
 
@@ -83,13 +87,67 @@ public class BoringDefaultGameRulesConfig {
                 LoggingUtils.LOGGER.info("Generating a new JSON schema...");
                 generateGameRuleProperties();
                 Writer schemaWriter = Files.newBufferedWriter(SCHEMA_PATH, StandardCharsets.UTF_8);
-                gson.toJson(createSchemaObject(newSchemaHash), schemaWriter);
+                GSON.toJson(createSchemaObject(newSchemaHash), schemaWriter);
                 schemaWriter.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+	public static void updateConfig() {
+		updateConfig(null);
+	}
+
+	public static void updateConfig(GameRules newGameRules) {
+		defaultGameRulesJson = new JsonObject();
+		var defaultGameRules = new GameRules();
+
+		if (newGameRules != null) {
+			GameRules.accept(new FabricGameRuleVisitor() {
+				@Override
+				public void visitBoolean(Key<BooleanRule> key, Type<BooleanRule> type) {
+					if (newGameRules.get(key).get() != defaultGameRules.get(key).get()) {
+						defaultGameRulesJson.addProperty(key.getName(), newGameRules.get(key).get());
+					}
+				}
+
+				@Override
+				public void visitInt(Key<IntRule> key, Type<IntRule> type) {
+					if (newGameRules.get(key).get() != defaultGameRules.get(key).get()) {
+						defaultGameRulesJson.addProperty(key.getName(), newGameRules.get(key).get());
+					}
+				}
+
+				@Override
+				public void visitDouble(Key<DoubleRule> key, Type<DoubleRule> type) {
+					if (newGameRules.get(key).get() != defaultGameRules.get(key).get()) {
+						defaultGameRulesJson.addProperty(key.getName(), newGameRules.get(key).get());
+					}
+				}
+
+				@Override
+				public <E extends Enum<E>> void visitEnum(Key<EnumRule<E>> key, Type<EnumRule<E>> type) {
+					if (!newGameRules.get(key).get().equals(defaultGameRules.get(key).get())) {
+						defaultGameRulesJson.addProperty(key.getName(), newGameRules.get(key).get().name());
+					}
+				}
+			});
+		}
+
+		try {
+			JsonObject configObject = new JsonObject();
+			configObject.addProperty("$schema", SCHEMA_PATH.toUri().toString());
+			configObject.add("default_game_rules", defaultGameRulesJson);
+			configObject.addProperty("generate_json_schema", true);
+			Writer configWriter;
+			configWriter = Files.newBufferedWriter(CONFIG_PATH, StandardCharsets.UTF_8);
+			GSON.toJson(configObject, configWriter);
+			configWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
     private static void generateGameRuleProperties() {
         defaultGameRulesProperties = new JsonObject();
