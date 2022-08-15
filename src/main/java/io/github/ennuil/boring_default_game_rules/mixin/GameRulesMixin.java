@@ -15,8 +15,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import io.github.ennuil.boring_default_game_rules.config.BoringDefaultGameRulesConfig;
+import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 
+@SuppressWarnings("unchecked")
 @Mixin(GameRules.class)
 public class GameRulesMixin {
 	@Shadow
@@ -28,20 +29,21 @@ public class GameRulesMixin {
 		method = "<init>()V"
 	)
 	private <E extends Enum<E>> void overrideDefaults(CallbackInfo info) {
-		if (BoringDefaultGameRulesConfig.defaultGameRulesJson.size() == 0) return;
+		if (ModConfigManager.DEFAULT_GAME_RULES.value().size() == 0) return;
 
+		ModConfigManager.DEFAULT_GAME_RULES.value();
 		this.rules.forEach((key, rule) -> {
-			BoringDefaultGameRulesConfig.defaultGameRulesJson.entrySet().forEach(entry -> {
+			ModConfigManager.DEFAULT_GAME_RULES.value().entrySet().forEach(entry -> {
 				if (key.getName().equals(entry.getKey())) {
 					if (rule instanceof IntRule intRule) {
-						intRule.set(entry.getValue().getAsInt(), null);
+						intRule.set(Integer.parseInt(entry.getValue()), null);
 					} else if (rule instanceof BooleanRule booleanRule) {
-						booleanRule.set(entry.getValue().getAsBoolean(), null);
+						booleanRule.set(Boolean.parseBoolean(entry.getValue()), null);
 					} else if (rule instanceof DoubleRule doubleRule) {
-						((DoubleRuleAccessor)(Object) doubleRule).setValue(entry.getValue().getAsDouble());
+						((DoubleRuleAccessor)(Object) doubleRule).setValue(Double.parseDouble(entry.getValue()));
 					} else if (rule instanceof EnumRule enumRule) {
 						// FIXME - This entire bit of code is terrible, it has yellow squiggles
-						enumRule.set(Enum.valueOf(enumRule.getEnumClass(), entry.getValue().getAsString()), null);
+						enumRule.set(Enum.valueOf(enumRule.getEnumClass(), entry.getValue()), null);
 					}
 				}
 			});

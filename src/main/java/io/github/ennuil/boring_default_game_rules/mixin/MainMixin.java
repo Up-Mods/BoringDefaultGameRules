@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import io.github.ennuil.boring_default_game_rules.config.BoringDefaultGameRulesConfig;
+import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 import net.minecraft.server.Main;
 
 @Mixin(Main.class)
@@ -23,8 +23,8 @@ public class MainMixin {
     )
     private static void mainMixin(String[] args, CallbackInfo ci) {
         if (!hasLoadedOnce) {
-            BoringDefaultGameRulesConfig.generateGameRulesHash();
-			BoringDefaultGameRulesConfig.loadOrCreateConfig();
+            ModConfigManager.generateGameRulesHash();
+			ModConfigManager.loadOrCreateConfig();
             hasLoadedOnce = true;
         }
     }

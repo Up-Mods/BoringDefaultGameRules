@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import io.github.ennuil.boring_default_game_rules.config.BoringDefaultGameRulesConfig;
+import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 import io.github.ennuil.boring_default_game_rules.mixin.EditGameRulesScreenAccessor;
 import io.github.ennuil.boring_default_game_rules.mixin.ScreenAccessor;
 import net.minecraft.client.gui.Element;
@@ -38,7 +38,7 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 		public ResetButtonWidget() {
 			super(null);
 			this.resetButton = new ButtonWidget(10, 5, 150, 20, Text.translatable("boring_default_game_rules.edit_default_game_rules.reset_to_default"), button -> {
-				BoringDefaultGameRulesConfig.updateConfig();
+				ModConfigManager.updateConfig();
 				EditDefaultGameRulesScreen.this.closeScreen();
 			});
 			this.widgets.add(this.resetButton);
