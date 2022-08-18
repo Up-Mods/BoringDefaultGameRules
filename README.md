@@ -14,7 +14,7 @@ This mod is available for download on the following services:
 
 ## Usage
 
-With this mod, there are a pletora of ways in which you can edit the default game rules.
+With this mod, there are two main methods in which you can edit the default game rules.
 
 The main way to edit the defaults is through the "Edit Default Game Rules" screen, which can be accessed either through a button at the bottom of Vanilla's "Game Rules" screen or through the mod's config button on [Mod Menu](https://modrinth.com/mod/modmenu). On this screen, you can change the defaults like you would change the game rule values on a regular world, with a "Reset to Default" button being available at the bottom of the list if needed.
 
