@@ -9,11 +9,11 @@ import org.quiltmc.config.api.values.ValueMap;
 public class ModConfig extends WrappedConfig {
 	// wait, how in the world is this working???
 	public final String $schema = ModConfigManager.GENERATE_ME;
-	public final ValueMap<String> default_game_rules = ValueMap.builder("").build();
+	public final ValueMap<Object> default_game_rules = ValueMap.builder((Object) "").build();
 	public final boolean generate_json_schema = true;
 
 	// TODO - JSON support, with JSON5 being opt-in
 	public void setSerializer(Config.Builder builder) {
-		builder.format("json5");
+		builder.format("json");
 	}
 }

@@ -1,4 +1,4 @@
-package io.github.ennuil.boring_default_game_rules.modmenu;
+package io.github.ennuil.boring_default_game_rules.screen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 	protected void init() {
 		super.init();
 		var button = new ResetButtonWidget();
-		((EditGameRulesScreenAccessor) (Object) this).getRuleListWidget().children().add(button);
+		((EditGameRulesScreenAccessor) this).getRuleListWidget().children().add(button);
 	}
 
 	public class ResetButtonWidget extends EditGameRulesScreen.AbstractRuleWidget {
@@ -36,10 +36,14 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 		private List<ClickableWidget> widgets = new ArrayList<>();
 
 		public ResetButtonWidget() {
-			super(null);
+			super(List.of(
+				Text.translatable("boring_default_game_rules.edit_default_game_rules.reset_to_default.tooltip").asOrderedText()
+			));
 			this.resetButton = new ButtonWidget(10, 5, 150, 20, Text.translatable("boring_default_game_rules.edit_default_game_rules.reset_to_default"), button -> {
-				ModConfigManager.updateConfig();
-				EditDefaultGameRulesScreen.this.closeScreen();
+				ModConfigManager.resetDefaults();
+				((EditGameRulesScreenAccessor) EditDefaultGameRulesScreen.this).setGameRules(new GameRules());
+				EditDefaultGameRulesScreen.this.clearChildren();
+				EditDefaultGameRulesScreen.this.init();
 			});
 			this.widgets.add(this.resetButton);
 		}
@@ -59,5 +63,6 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 			this.resetButton.x = x + 33;
 			this.resetButton.y = y;
 			this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
-		}}
+		}
+	}
 }

@@ -9,7 +9,5 @@ public class LoadConfigEvent implements ClientLifecycleEvents.Ready {
 	@Override
 	public void readyClient(MinecraftClient client) {
 		new ModConfigManager();
-		ModConfigManager.generateGameRulesHash();
-		ModConfigManager.loadOrCreateConfig();
 	}
 }

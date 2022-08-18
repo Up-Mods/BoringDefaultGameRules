@@ -23,8 +23,7 @@ public class MainMixin {
     )
     private static void mainMixin(String[] args, CallbackInfo ci) {
         if (!hasLoadedOnce) {
-            ModConfigManager.generateGameRulesHash();
-			ModConfigManager.loadOrCreateConfig();
+            new ModConfigManager();
             hasLoadedOnce = true;
         }
     }

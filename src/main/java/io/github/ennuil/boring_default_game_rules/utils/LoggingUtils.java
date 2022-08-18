@@ -1,8 +1,8 @@
 package io.github.ennuil.boring_default_game_rules.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoggingUtils {
-    public static final Logger LOGGER = LogManager.getLogger("Boring Default Game Rules");
+    public static final Logger LOGGER = LoggerFactory.getLogger("Boring Default Game Rules");
 }

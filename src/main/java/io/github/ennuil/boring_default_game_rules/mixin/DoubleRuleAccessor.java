@@ -7,21 +7,21 @@ import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 
 @Mixin(DoubleRule.class)
 public interface DoubleRuleAccessor {
-    @Accessor
+    @Accessor(remap = false)
     double getMinimumValue();
 
-    @Accessor
+    @Accessor(remap = false)
     void setMinimumValue(double minimumValue);
 
-    @Accessor
+    @Accessor(remap = false)
     double getMaximumValue();
 
-    @Accessor
+    @Accessor(remap = false)
     void setMaximumValue(double maximumValue);
 
-    @Accessor
+    @Accessor(remap = false)
     double getValue();
 
-    @Accessor
+    @Accessor(remap = false)
     void setValue(double value);
 }

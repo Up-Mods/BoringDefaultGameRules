@@ -6,7 +6,7 @@
 		"version": "${version}",
 		"metadata": {
 			"name": "Boring Default Game Rules",
-			"description": "A mod that lets you override the default game rule values. You can configure it by editing the config file (located at .minecraft/config/boringdefaultgamerules.json), which is simple and painless thanks to JSON Schemas, and reload it by clicking the mod's button in Mod Menu.",
+			"description": "A mod that lets you override the default game rule values. You can configure it by either the new \"Edit Default Game Rules\" button on the bottom of the Game Rules list, through the Mod Menu config screen, or if outside the game, by editing the config file (located at .minecraft/config/boring_default_game_rules/config.json), which is simple and painless thanks to JSON Schemas!",
 			"contributors": {
 				"Ennui Langeweile": "Owner"
 			},
@@ -15,13 +15,17 @@
 				"issues": "https://github.com/EnnuiL/BoringDefaultGameRules/issues",
 				"sources": "https://github.com/EnnuiL/BoringDefaultGameRules"
 			},
-			"icon": "assets/boring_default_game_rules/icon.png",
+			"icon": {
+				"64": "assets/boring_default_game_rules/icon_64x.png",
+				"128": "assets/boring_default_game_rules/icon_128x.png"
+			},
 			"license": "MIT"
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"client_event": "io.github.ennuil.boring_default_game_rules.events.LoadConfigEvent",
-			"modmenu": "io.github.ennuil.boring_default_game_rules.modmenu.BoringDefaultGameRulesModMenuEntry"
+			"config_serializer": "io.github.ennuil.boring_default_game_rules.config.JsonSerializer",
+			"client_events": "io.github.ennuil.boring_default_game_rules.events.LoadConfigEvent",
+			"modmenu": "io.github.ennuil.boring_default_game_rules.modmenu.ModMenuEntry"
 		},
 		"depends": [
 			{
@@ -30,11 +34,11 @@
 			},
 			{
 				"id": "quilted_fabric_api",
-				"versions": ">=2.0.0-"
+				"versions": ">=4.0.0-"
 			},
 			{
 				"id": "minecraft",
-				"versions": ">=1.19"
+				"versions": ">=1.19.2"
 			}
 		]
 	},

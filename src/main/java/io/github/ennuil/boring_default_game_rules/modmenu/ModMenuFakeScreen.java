@@ -1,10 +1,11 @@
 package io.github.ennuil.boring_default_game_rules.modmenu;
 
 import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
+import io.github.ennuil.boring_default_game_rules.screen.EditDefaultGameRulesScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.world.GameRules;
 
-// By having a fake screen, the screen caching, which is undesirable for us, is bursted. Thanks, ARRFAB!
+// By having a fake screen, the screen caching, which is undesirable for us, is bursted. Thanks for the code, ARRFAB!
 public class ModMenuFakeScreen extends Screen {
     private final Screen parent;
 
@@ -15,7 +16,7 @@ public class ModMenuFakeScreen extends Screen {
 
     @Override
     protected void init() {
-		ModConfigManager.loadOrCreateConfig();
+		ModConfigManager.prepareSchema();
         this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(), gameRulesWrapper -> {
 			this.client.setScreen(this.parent);
 			gameRulesWrapper.ifPresent(gameRules -> ModConfigManager.updateConfig(gameRules));

@@ -36,14 +36,13 @@ public class GameRulesMixin {
 			ModConfigManager.DEFAULT_GAME_RULES.value().entrySet().forEach(entry -> {
 				if (key.getName().equals(entry.getKey())) {
 					if (rule instanceof IntRule intRule) {
-						intRule.set(Integer.parseInt(entry.getValue()), null);
+						intRule.set((Integer) entry.getValue(), null);
 					} else if (rule instanceof BooleanRule booleanRule) {
-						booleanRule.set(Boolean.parseBoolean(entry.getValue()), null);
+						booleanRule.set((Boolean) entry.getValue(), null);
 					} else if (rule instanceof DoubleRule doubleRule) {
-						((DoubleRuleAccessor)(Object) doubleRule).setValue(Double.parseDouble(entry.getValue()));
+						((DoubleRuleAccessor)(Object) doubleRule).setValue((Double) entry.getValue());
 					} else if (rule instanceof EnumRule enumRule) {
-						// FIXME - This entire bit of code is terrible, it has yellow squiggles
-						enumRule.set(Enum.valueOf(enumRule.getEnumClass(), entry.getValue()), null);
+						enumRule.set(Enum.valueOf(enumRule.getEnumClass(), (String) entry.getValue()), null);
 					}
 				}
 			});

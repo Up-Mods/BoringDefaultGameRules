@@ -9,9 +9,9 @@ import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 
 @Mixin(EnumRule.class)
 public interface EnumRuleAccessor<E extends Enum<E>> {
-    @Accessor
+    @Accessor(remap = false)
     List<E> getSupportedValues();
 
-    @Accessor
+    @Accessor(remap = false)
     void setSupportedValues(List<E> supportedValues);
 }

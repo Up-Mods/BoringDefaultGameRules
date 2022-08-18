@@ -7,15 +7,15 @@ import net.fabricmc.fabric.impl.gamerule.rule.BoundedIntRule;
 
 @Mixin(BoundedIntRule.class)
 public interface BoundedIntRuleAccessor {
-    @Accessor
+    @Accessor(remap = false)
     int getMinimumValue();
 
-    @Accessor
+    @Accessor(remap = false)
     void setMinimumValue(int minimumValue);
 
-    @Accessor
+    @Accessor(remap = false)
     int getMaximumValue();
 
-    @Accessor
+    @Accessor(remap = false)
     void setMaximumValue(int maximumValue);
 }
