@@ -1,4 +1,4 @@
-package io.github.ennuil.boring_default_game_rules.mixin;
+package io.github.ennuil.boring_default_game_rules.mixin.client;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;

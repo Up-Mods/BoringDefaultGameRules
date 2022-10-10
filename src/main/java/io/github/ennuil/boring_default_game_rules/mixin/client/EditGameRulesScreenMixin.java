@@ -1,4 +1,4 @@
-package io.github.ennuil.boring_default_game_rules.mixin;
+package io.github.ennuil.boring_default_game_rules.mixin.client;
 
 import java.util.ArrayList;
 import java.util.List;

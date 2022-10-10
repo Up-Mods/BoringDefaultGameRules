@@ -6,8 +6,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
-import io.github.ennuil.boring_default_game_rules.mixin.EditGameRulesScreenAccessor;
-import io.github.ennuil.boring_default_game_rules.mixin.ScreenAccessor;
+import io.github.ennuil.boring_default_game_rules.mixin.client.EditGameRulesScreenAccessor;
+import io.github.ennuil.boring_default_game_rules.mixin.client.ScreenAccessor;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
