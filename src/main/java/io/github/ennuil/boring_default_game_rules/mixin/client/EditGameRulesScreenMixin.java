@@ -44,17 +44,18 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 		}
 	}
 
+	@SuppressWarnings("all")
 	@Unique
 	public class EditDefaultsButtonWidget extends EditGameRulesScreen.AbstractRuleWidget {
-		private ButtonWidget resetButton;
-		private List<ClickableWidget> widgets = new ArrayList<>();
+		private final ButtonWidget resetButton;
+		private final List<ClickableWidget> widgets = new ArrayList<>();
 
 		public EditDefaultsButtonWidget() {
 			super(List.of(
 				Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.1").asOrderedText(),
 				Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.2").asOrderedText()
 			));
-			this.resetButton = new ButtonWidget(10, 5, 150, 20, Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules"), button -> {
+			this.resetButton = ButtonWidget.builder(Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules"), button -> {
 				EditGameRulesScreenMixin.this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(), gameRulesWrapper -> {
 					EditGameRulesScreenMixin.this.client.setScreen(EditGameRulesScreenMixin.this);
 					gameRulesWrapper.ifPresent(gameRules -> ModConfigManager.updateConfig(gameRules));
@@ -62,7 +63,10 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 					EditGameRulesScreenMixin.this.clearChildren();
 					EditGameRulesScreenMixin.this.init();
 				}));
-			});
+			})
+				.position(10, 5)
+				.size(150, 20)
+				.build();
 			this.widgets.add(this.resetButton);
 		}
 
@@ -78,8 +82,8 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.resetButton.x = x + 33;
-			this.resetButton.y = y;
+			this.resetButton.setX(x + 33);
+			this.resetButton.setY(y);
 			this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
 		}
 	}

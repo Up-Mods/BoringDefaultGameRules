@@ -1,21 +1,21 @@
 plugins {
 	id 'maven-publish'
-	alias(libs.plugins.quilt.loom)
+	alias libs.plugins.quilt.loom
 }
 
 archivesBaseName = project.archives_base_name
-version = project.version
+version = "${project.version}+${libs.versions.minecraft.get()}"
 group = project.maven_group
 
 repositories {
-	maven { url "https://maven.terraformersmc.com/releases/" }
+	maven { url 'https://maven.terraformersmc.com/releases/' }
 }
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
 	minecraft libs.minecraft
-	mappings variantOf(libs.quilt.mappings) { classifier "intermediary-v2" }
+	mappings variantOf(libs.quilt.mappings) { classifier 'intermediary-v2' }
 	modImplementation libs.quilt.loader
 
 	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
@@ -25,7 +25,7 @@ dependencies {
 }
 
 processResources {
-	inputs.property "version", version
+	inputs.property 'version', version
 
 	filesMatching('quilt.mod.json') {
 		expand "version": version
@@ -33,7 +33,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = "UTF-8"
+	it.options.encoding = 'UTF-8'
 	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
 	it.options.release = 17
 }
@@ -52,10 +52,9 @@ java {
 	// withJavadocJar()
 }
 
-// If you plan to use a different file for the license, don't forget to change the file name here!
 jar {
-	from("LICENSE") {
-		rename { "${it}_${archivesBaseName}" }
+	filesMatching('LICENSE') {
+		rename '^(LICENSE.*?)(\\..*)?$', "\$1_${archivesBaseName}\$2"
 	}
 }
 
