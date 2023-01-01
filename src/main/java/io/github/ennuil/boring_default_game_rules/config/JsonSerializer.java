@@ -54,37 +54,37 @@ public final class JsonSerializer implements Serializer {
 	}
 
 	private void serialize(JsonWriter writer, Object value) throws IOException {
-		if (value instanceof Integer) {
-			writer.value((Integer) value);
-		} else if (value instanceof Long) {
-			writer.value((Long) value);
-		} else if (value instanceof Float) {
-			writer.value((Float) value);
-		} else if (value instanceof Double) {
-			writer.value((Double) value);
-		} else if (value instanceof Boolean) {
-			writer.value((Boolean) value);
-		} else if (value instanceof String) {
-			writer.value((String) value);
-		} else if (value instanceof ValueList<?>) {
+		if (value instanceof Integer intValue) {
+			writer.value(intValue);
+		} else if (value instanceof Long longValue) {
+			writer.value(longValue);
+		} else if (value instanceof Float floatValue) {
+			writer.value(floatValue);
+		} else if (value instanceof Double doubleValue) {
+			writer.value(doubleValue);
+		} else if (value instanceof Boolean booleanValue) {
+			writer.value(booleanValue);
+		} else if (value instanceof String stringValue) {
+			writer.value(stringValue);
+		} else if (value instanceof ValueList<?> valueList) {
 			writer.beginArray();
 
-			for (Object v : (ValueList<?>) value) {
+			for (var v : valueList) {
 				serialize(writer, v);
 			}
 
 			writer.endArray();
-		} else if (value instanceof ValueMap<?>) {
+		} else if (value instanceof ValueMap<?> valueMap) {
 			writer.beginObject();
 
-			for (Map.Entry<String, ?> entry : (ValueMap<?>) value) {
+			for (var entry : valueMap) {
 				writer.name(entry.getKey());
 				serialize(writer, entry.getValue());
 			}
 
 			writer.endObject();
-		} else if (value instanceof ConfigSerializableObject) {
-			serialize(writer, ((ConfigSerializableObject<?>) value).getRepresentation());
+		} else if (value instanceof ConfigSerializableObject<?> serializableObject) {
+			serialize(writer, serializableObject.getRepresentation());
 		} else if (value == null) {
 			writer.nullValue();
 		} else if (value.getClass().isEnum()) {

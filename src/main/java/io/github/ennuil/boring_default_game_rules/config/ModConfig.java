@@ -12,7 +12,7 @@ public class ModConfig extends WrappedConfig {
 	public final ValueMap<Object> default_game_rules = ValueMap.builder((Object) "").build();
 	public final boolean generate_json_schema = true;
 
-	// TODO - JSON support, with JSON5 being opt-in
+	// TODO - Opt-in JSON5/JSONC support
 	public void setSerializer(Config.Builder builder) {
 		builder.format("json");
 	}

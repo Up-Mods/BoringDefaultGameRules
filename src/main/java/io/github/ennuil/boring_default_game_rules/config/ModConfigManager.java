@@ -38,7 +38,6 @@ public class ModConfigManager {
 	public static final String GENERATE_ME = "GENERATE_ME";
 	public static final Path SCHEMA_DIRECTORY_PATH = QuiltLoader.getConfigDir().resolve("boring_default_game_rules");
 	public static final Path SCHEMA_PATH = SCHEMA_DIRECTORY_PATH.resolve("config.schema.json");
-	public static final Path CONFIG_PATH = QuiltLoader.getConfigDir().resolve("boringdefaultgamerules.json");
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	public static final ModConfig CONFIG = QuiltConfig.create("boring_default_game_rules", "config", ModConfig.class);

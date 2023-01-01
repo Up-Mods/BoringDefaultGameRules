@@ -9,8 +9,8 @@ import net.minecraft.world.GameRules;
 @Mixin(EditGameRulesScreen.class)
 public interface EditGameRulesScreenAccessor {
 	@Accessor
-	public EditGameRulesScreen.RuleListWidget getRuleListWidget();
+	EditGameRulesScreen.RuleListWidget getRuleListWidget();
 
 	@Accessor
-	public void setGameRules(GameRules gameRules);
+	void setGameRules(GameRules gameRules);
 }
