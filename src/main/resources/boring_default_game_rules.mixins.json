@@ -12,6 +12,7 @@
     "BoundedIntRuleAccessor",
     "DoubleRuleAccessor",
     "EnumRuleAccessor",
+    "GameRulesAccessor",
     "GameRulesMixin"
   ],
   "server": [

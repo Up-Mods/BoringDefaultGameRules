@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
+import io.github.ennuil.boring_default_game_rules.mixin.GameRulesAccessor;
 import org.quiltmc.config.api.values.TrackedValue;
 import org.quiltmc.config.api.values.ValueMap;
 import org.quiltmc.loader.api.QuiltLoader;
@@ -28,7 +29,6 @@ import net.fabricmc.fabric.api.gamerule.v1.FabricGameRuleVisitor;
 import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 import net.fabricmc.fabric.impl.gamerule.rule.BoundedIntRule;
-import net.fabricmc.fabric.mixin.gamerule.GameRulesAccessor;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Language;
 import net.minecraft.world.GameRules;
@@ -50,6 +50,7 @@ public class ModConfigManager {
 	private static String newSchemaHash = "";
 
 	public ModConfigManager() {
+		LoggingUtils.LOGGER.info("a");
 		ModConfigManager.generateGameRulesHash();
 		ModConfigManager.prepareSchema();
 		CONFIG.save();
@@ -235,11 +236,11 @@ public class ModConfigManager {
 		integerGameRuleObject.addProperty("description", description);
 		integerGameRuleObject.addProperty("default", defaultValue);
 
-		if (!minimum.isEmpty() && minimum.get() != Integer.MIN_VALUE) {
+		if (minimum.isPresent() && minimum.get() != Integer.MIN_VALUE) {
 			integerGameRuleObject.addProperty("minimum", minimum.get());
 		}
 
-		if (!maximum.isEmpty() && maximum.get() != Integer.MAX_VALUE) {
+		if (maximum.isPresent() && maximum.get() != Integer.MAX_VALUE) {
 			integerGameRuleObject.addProperty("maximum", maximum.get());
 		}
 
@@ -282,9 +283,7 @@ public class ModConfigManager {
 	}
 
 	public static void generateGameRulesHash() {
-		GameRulesAccessor.getRuleTypes().keySet().forEach(key -> {
-			newSchemaHash += key.getName();
-		});
+		GameRulesAccessor.getRuleTypes().keySet().forEach(key -> newSchemaHash += key.getName());
 		newSchemaHash = Hashing.sha256().hashString(newSchemaHash, StandardCharsets.UTF_8).toString();
 	}
 }

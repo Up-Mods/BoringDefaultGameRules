@@ -1,5 +1,6 @@
 package io.github.ennuil.boring_default_game_rules.mixin.server;
 
+import io.github.ennuil.boring_default_game_rules.utils.LoggingUtils;
 import net.minecraft.server.WorldLoader;
 import net.minecraft.world.storage.WorldSaveStorage;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,14 +20,9 @@ public class MainMixin {
     @Unique
     private static boolean bdgr$hasLoadedOnce = false;
 
-	// Yes, this mixin has been cursed by Hashed Mojmap
     @Inject(
-		method = "m_cbzunkqe(Lnet/minecraft/world/storage/WorldSaveStorage$Session;Ljoptsimple/OptionSet;Ljoptsimple/OptionSpec;Lnet/minecraft/server/dedicated/ServerPropertiesLoader;Ljoptsimple/OptionSpec;Lnet/minecraft/server/WorldLoader$C_hkmknvtj;)Lnet/minecraft/server/WorldLoader$C_ijyqofsr;",
-        at = @At(
-            value = "INVOKE_ASSIGN",
-            target = "Lnet/minecraft/server/dedicated/ServerPropertiesLoader;getPropertiesHandler()Lnet/minecraft/server/dedicated/ServerPropertiesHandler;"
-        ),
-		require = 1
+		method = "method_43613",
+        at = @At(value = "NEW", target = "net/minecraft/world/WorldInfo")
     )
     private static void loadConfigOnServerInit(
 			WorldSaveStorage.Session session,
@@ -38,6 +34,7 @@ public class MainMixin {
 			CallbackInfoReturnable<WorldLoader.C_ijyqofsr<?>> cir
 	) {
         if (!bdgr$hasLoadedOnce) {
+			LoggingUtils.LOGGER.info("b");
             new ModConfigManager();
             bdgr$hasLoadedOnce = true;
         }
