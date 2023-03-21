@@ -142,7 +142,7 @@ public class ModConfigManager {
 	private static void generateGameRuleProperties() {
 		defaultGameRulesProperties = new JsonObject();
 		GameRules.accept(new FabricGameRuleVisitor() {
-			Language language = Language.getInstance();
+			final Language language = Language.getInstance();
 
 			@Override
 			public void visitBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {

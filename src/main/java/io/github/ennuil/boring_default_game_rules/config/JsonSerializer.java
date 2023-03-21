@@ -27,12 +27,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.quiltmc.config.api.Config;
-import org.quiltmc.config.api.Constraint;
 import org.quiltmc.config.api.MarshallingUtils;
 import org.quiltmc.config.api.Serializer;
-import org.quiltmc.config.api.annotations.Comment;
 import org.quiltmc.config.api.exceptions.ConfigParseException;
-import org.quiltmc.config.api.values.CompoundConfigValue;
 import org.quiltmc.config.api.values.ConfigSerializableObject;
 import org.quiltmc.config.api.values.TrackedValue;
 import org.quiltmc.config.api.values.ValueList;
@@ -95,10 +92,6 @@ public final class JsonSerializer implements Serializer {
 	}
 
 	private void serialize(JsonWriter writer, ValueTreeNode node) throws IOException {
-		for (String comment : node.metadata(Comment.TYPE)) {
-			writer.comment(comment);
-		}
-
 		if (node instanceof ValueTreeNode.Section) {
 			writer.name(node.key().getLastComponent());
 			writer.beginObject();
@@ -125,16 +118,6 @@ public final class JsonSerializer implements Serializer {
 						options.append(", ");
 					}
 				}
-
-				writer.comment(options.toString());
-			}
-
-			for (Constraint<?> constraint : trackedValue.constraints()) {
-				writer.comment(constraint.getRepresentation());
-			}
-
-			if (!(defaultValue instanceof CompoundConfigValue<?>)) {
-				writer.comment("default: " + defaultValue);
 			}
 
 			writer.name(node.key().getLastComponent());
@@ -146,10 +129,6 @@ public final class JsonSerializer implements Serializer {
 	@Override
 	public void serialize(Config config, OutputStream to) throws IOException {
 		JsonWriter writer = JsonWriter.json(new OutputStreamWriter(to));
-
-		for (String comment : config.metadata(Comment.TYPE)) {
-			writer.comment(comment);
-		}
 
 		writer.beginObject();
 

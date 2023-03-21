@@ -19,7 +19,7 @@ public class ModMenuFakeScreen extends Screen {
 		ModConfigManager.prepareSchema();
         this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(), gameRulesWrapper -> {
 			this.client.setScreen(this.parent);
-			gameRulesWrapper.ifPresent(gameRules -> ModConfigManager.updateConfig(gameRules));
+			gameRulesWrapper.ifPresent(ModConfigManager::updateConfig);
 		}));
     }
 
