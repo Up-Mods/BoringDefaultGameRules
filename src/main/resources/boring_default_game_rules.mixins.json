@@ -15,9 +15,6 @@
     "GameRulesAccessor",
     "GameRulesMixin"
   ],
-  "server": [
-    "server.MainMixin"
-  ],
   "injectors": {
     "defaultRequire": 1
   }

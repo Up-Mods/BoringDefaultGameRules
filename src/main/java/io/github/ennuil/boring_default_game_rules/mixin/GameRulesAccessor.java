@@ -10,6 +10,6 @@ import java.util.Map;
 public interface GameRulesAccessor {
 	@Accessor("RULE_TYPES")
 	static Map<GameRules.Key<?>, GameRules.Type<?>> getRuleTypes() {
-		throw new IllegalStateException("a");
-	};
+		throw new IllegalStateException("Mixin injection failed.");
+	}
 }

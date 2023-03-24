@@ -11,7 +11,4 @@ import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 public interface EnumRuleAccessor<E extends Enum<E>> {
     @Accessor(remap = false)
     List<E> getSupportedValues();
-
-    @Accessor(remap = false)
-    void setSupportedValues(List<E> supportedValues);
 }

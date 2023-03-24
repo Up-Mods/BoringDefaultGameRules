@@ -49,11 +49,22 @@ public class ModConfigManager {
 	private static JsonObject defaultGameRulesProperties;
 	private static String newSchemaHash = "";
 
-	public ModConfigManager() {
-		LoggingUtils.LOGGER.info("a");
+	private static boolean initialized = false;
+
+	private ModConfigManager() {}
+
+	public static void init() {
 		ModConfigManager.generateGameRulesHash();
 		ModConfigManager.prepareSchema();
 		CONFIG.save();
+
+		ModConfigManager.initialized = true;
+	}
+
+	public static void validateInit() {
+		if (!initialized) {
+			throw new IllegalStateException("The mod config manager has been initialized way too early! Something went wrong in the process!");
+		}
 	}
 
 	public static void prepareSchema() {
@@ -153,8 +164,8 @@ public class ModConfigManager {
 			@Override
 			public void visitInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
 				if (type.createRule() instanceof BoundedIntRule boundedType) {
-					int minimum = ((BoundedIntRuleAccessor)(Object) boundedType).getMinimumValue();
-					int maximum = ((BoundedIntRuleAccessor)(Object) boundedType).getMaximumValue();
+					int minimum = ((BoundedIntRuleAccessor) (Object) boundedType).getMinimumValue();
+					int maximum = ((BoundedIntRuleAccessor) (Object) boundedType).getMaximumValue();
 					addIntegerGameRule(key.getName(), language.get(key.getTranslationKey()), boundedType.get(), Optional.of(minimum), Optional.of(maximum));
 				} else {
 					addIntegerGameRule(key.getName(), language.get(key.getTranslationKey()), type.createRule().get(), Optional.empty(), Optional.empty());
@@ -164,8 +175,8 @@ public class ModConfigManager {
 			@Override
 			public void visitDouble(GameRules.Key<DoubleRule> key, GameRules.Type<DoubleRule> type) {
 				DoubleRule doubleRule = type.createRule();
-				double maximum = ((DoubleRuleAccessor)(Object) doubleRule).getMaximumValue();
-				double minimum = ((DoubleRuleAccessor)(Object) doubleRule).getMinimumValue();
+				double maximum = ((DoubleRuleAccessor) (Object) doubleRule).getMaximumValue();
+				double minimum = ((DoubleRuleAccessor) (Object) doubleRule).getMinimumValue();
 				addDoubleGameRule(key.getName(), language.get(key.getTranslationKey()), doubleRule.get(), minimum, maximum);
 			}
 

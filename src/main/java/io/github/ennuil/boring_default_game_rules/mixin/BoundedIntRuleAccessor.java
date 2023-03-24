@@ -11,11 +11,5 @@ public interface BoundedIntRuleAccessor {
     int getMinimumValue();
 
     @Accessor(remap = false)
-    void setMinimumValue(int minimumValue);
-
-    @Accessor(remap = false)
     int getMaximumValue();
-
-    @Accessor(remap = false)
-    void setMaximumValue(int maximumValue);
 }

@@ -1,13 +1,19 @@
 package io.github.ennuil.boring_default_game_rules.events;
 
-import org.quiltmc.qsl.lifecycle.api.client.event.ClientLifecycleEvents;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
+import org.quiltmc.qsl.base.api.entrypoint.server.DedicatedServerModInitializer;
 
 import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
-import net.minecraft.client.MinecraftClient;
 
-public class LoadConfigEvent implements ClientLifecycleEvents.Ready {
+public class LoadConfigEvent implements ClientModInitializer, DedicatedServerModInitializer {
 	@Override
-	public void readyClient(MinecraftClient client) {
-		new ModConfigManager();
+	public void onInitializeClient(ModContainer mod) {
+		ModConfigManager.init();
+	}
+
+	@Override
+	public void onInitializeServer(ModContainer mod) {
+		ModConfigManager.init();
 	}
 }

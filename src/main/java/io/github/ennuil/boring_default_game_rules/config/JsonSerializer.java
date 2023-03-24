@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 QuiltMC
+ * Copyright 2022-2023 QuiltMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,6 +65,10 @@ public final class JsonSerializer implements Serializer {
 			writer.value(booleanValue);
 		} else if (value instanceof String stringValue) {
 			writer.value(stringValue);
+		} else if (value instanceof BigInteger bigIntValue) {
+			writer.value(bigIntValue);
+		} else if (value instanceof BigDecimal bigDecimalValue) {
+			writer.value(bigDecimalValue);
 		} else if (value instanceof ValueList<?> valueList) {
 			writer.beginArray();
 
@@ -71,10 +77,10 @@ public final class JsonSerializer implements Serializer {
 			}
 
 			writer.endArray();
-		} else if (value instanceof ValueMap<?> valueMap) {
+		} else if (value instanceof ValueMap<?>) {
 			writer.beginObject();
 
-			for (var entry : valueMap) {
+			for (Map.Entry<String, ?> entry : (ValueMap<?>) value) {
 				writer.name(entry.getKey());
 				serialize(writer, entry.getValue());
 			}
@@ -103,23 +109,6 @@ public final class JsonSerializer implements Serializer {
 			writer.endObject();
 		} else {
 			TrackedValue<?> trackedValue = ((TrackedValue<?>) node);
-			Object defaultValue = trackedValue.getDefaultValue();
-
-			if (defaultValue.getClass().isEnum()) {
-				StringBuilder options = new StringBuilder("options: ");
-				Object[] enumConstants = defaultValue.getClass().getEnumConstants();
-
-				for (int i = 0, enumConstantsLength = enumConstants.length; i < enumConstantsLength; i++) {
-					Object o = enumConstants[i];
-
-					options.append(o);
-
-					if (i < enumConstantsLength - 1) {
-						options.append(", ");
-					}
-				}
-			}
-
 			writer.name(node.key().getLastComponent());
 
 			serialize(writer, trackedValue.getRealValue());
@@ -209,7 +198,7 @@ public final class JsonSerializer implements Serializer {
 				reader.nextNull();
 				yield null;
 			}
-			case END_DOCUMENT ->	throw new ConfigParseException("Unexpected end of file");
+			case END_DOCUMENT -> throw new ConfigParseException("Unexpected end of file");
 			default -> throw new ConfigParseException("Encountered unknown JSON token");
 		};
 	}

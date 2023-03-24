@@ -24,28 +24,24 @@ public class GameRulesMixin {
 	@Final
 	private Map<GameRules.Key<?>, GameRules.Rule<?>> rules;
 
-	@Inject(
-		at = @At("TAIL"),
-		method = "<init>()V"
-	)
+	@Inject(method = "<init>()V", at = @At("TAIL"))
 	private <E extends Enum<E>> void overrideDefaults(CallbackInfo info) {
+		ModConfigManager.validateInit();
+
 		if (ModConfigManager.DEFAULT_GAME_RULES.value().size() == 0) return;
 
-		ModConfigManager.DEFAULT_GAME_RULES.value();
-		this.rules.forEach((key, rule) -> {
-			ModConfigManager.DEFAULT_GAME_RULES.value().entrySet().forEach(entry -> {
-				if (key.getName().equals(entry.getKey())) {
-					if (rule instanceof IntRule intRule) {
-						intRule.set((Integer) entry.getValue(), null);
-					} else if (rule instanceof BooleanRule booleanRule) {
-						booleanRule.set((Boolean) entry.getValue(), null);
-					} else if (rule instanceof DoubleRule doubleRule) {
-						((DoubleRuleAccessor)(Object) doubleRule).setValue((Double) entry.getValue());
-					} else if (rule instanceof EnumRule enumRule) {
-						enumRule.set(Enum.valueOf(enumRule.getEnumClass(), (String) entry.getValue()), null);
-					}
+		this.rules.forEach((key, rule) -> ModConfigManager.DEFAULT_GAME_RULES.value().forEach((defaultKey, defaultValue) -> {
+			if (key.getName().equals(defaultKey)) {
+				if (rule instanceof IntRule intRule) {
+					intRule.set(((Number) defaultValue).intValue(), null);
+				} else if (rule instanceof BooleanRule booleanRule) {
+					booleanRule.set((Boolean) defaultValue, null);
+				} else if (rule instanceof DoubleRule doubleRule) {
+					((DoubleRuleAccessor)(Object) doubleRule).setValue(((Number) defaultValue).doubleValue());
+				} else if (rule instanceof EnumRule enumRule) {
+					enumRule.set(Enum.valueOf(enumRule.getEnumClass(), (String) defaultValue), null);
 				}
-			});
-		});
+			}
+		}));
 	}
 }

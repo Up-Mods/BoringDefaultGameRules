@@ -33,7 +33,9 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 	@Shadow
 	private EditGameRulesScreen.RuleListWidget ruleListWidget;
 
-	@Shadow @Final @Mutable
+	@Shadow
+	@Final
+	@Mutable
 	private GameRules gameRules;
 
 	@Inject(method = "init()V", at = @At("TAIL"))
@@ -47,7 +49,7 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 	@SuppressWarnings("all")
 	@Unique
 	public class EditDefaultsButtonWidget extends EditGameRulesScreen.AbstractRuleWidget {
-		private final ButtonWidget resetButton;
+		private final ButtonWidget editButton;
 		private final List<ClickableWidget> widgets = new ArrayList<>();
 
 		public EditDefaultsButtonWidget() {
@@ -55,7 +57,7 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 				Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.1").asOrderedText(),
 				Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.2").asOrderedText()
 			));
-			this.resetButton = ButtonWidget.builder(Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules"), button -> {
+			this.editButton = ButtonWidget.builder(Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules"), button -> {
 				EditGameRulesScreenMixin.this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(), gameRulesWrapper -> {
 					EditGameRulesScreenMixin.this.client.setScreen(EditGameRulesScreenMixin.this);
 					gameRulesWrapper.ifPresent(gameRules -> ModConfigManager.updateConfig(gameRules));
@@ -67,7 +69,7 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 				.position(10, 5)
 				.size(150, 20)
 				.build();
-			this.widgets.add(this.resetButton);
+			this.widgets.add(this.editButton);
 		}
 
 		@Override
@@ -82,9 +84,9 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.resetButton.setX(x + 33);
-			this.resetButton.setY(y);
-			this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
+			this.editButton.setX(x + 33);
+			this.editButton.setY(y);
+			this.editButton.render(matrices, mouseX, mouseY, tickDelta);
 		}
 	}
 }
