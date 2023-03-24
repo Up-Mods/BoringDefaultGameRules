@@ -1,8 +1,8 @@
 {
-  "boring_default_game_rules.game_rules.edit_default_game_rules": "Editar os padrões",
+  "boring_default_game_rules.game_rules.edit_default_game_rules": "Editar padrões",
   "boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.1": "Permite editar os valores padrão das regras do jogo.",
   "boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.2": "AVISO: Isso irá descartar a sua configuração atual!",
   "boring_default_game_rules.edit_default_game_rules.title": "Editar padrões das regras de jogo",
-  "boring_default_game_rules.edit_default_game_rules.reset_to_default": "Redefinir para o padrão",
-  "boring_default_game_rules.edit_default_game_rules.reset_to_default.tooltip": "Redefine os padrões modificados para os seus valores originais."
+  "boring_default_game_rules.edit_default_game_rules.reset_defaults": "Redefinir padrões",
+  "boring_default_game_rules.edit_default_game_rules.reset_defaults.tooltip": "Redefine os padrões modificados para os seus valores originais."
 }

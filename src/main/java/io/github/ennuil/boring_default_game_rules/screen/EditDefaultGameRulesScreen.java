@@ -20,7 +20,7 @@ import net.minecraft.world.GameRules;
 public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 	public EditDefaultGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> consumer) {
 		super(gameRules, consumer);
-		// You can't stop destiny, `final` keyword
+		// You can't stop destiny, `final` keyword!
 		((ScreenAccessor) this).setTitle(Text.translatable("boring_default_game_rules.edit_default_game_rules.title"));
 	}
 
@@ -36,20 +36,19 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 		private final List<ClickableWidget> widgets = new ArrayList<>();
 
 		public ResetButtonWidget() {
-			super(List.of(
-				Text.translatable("boring_default_game_rules.edit_default_game_rules.reset_to_default.tooltip").asOrderedText()
-			));
-			this.resetButton = ButtonWidget.builder(Text.translatable("boring_default_game_rules.edit_default_game_rules.reset_to_default"), button -> {
-				double scrollAmount = ((EditGameRulesScreenAccessor) EditDefaultGameRulesScreen.this).getRuleListWidget().getScrollAmount();
-				ModConfigManager.resetDefaults();
-				((EditGameRulesScreenAccessor) EditDefaultGameRulesScreen.this).setGameRules(new GameRules());
-				EditDefaultGameRulesScreen.this.clearChildren();
-				EditDefaultGameRulesScreen.this.init();
-				((EditGameRulesScreenAccessor) EditDefaultGameRulesScreen.this).getRuleListWidget().setScrollAmount(scrollAmount);
-			})
-				.position(10, 5)
-				.size(150, 20)
-				.build();
+			super(List.of(Text.translatable("boring_default_game_rules.edit_default_game_rules.reset_defaults.tooltip").asOrderedText()));
+			this.resetButton = ButtonWidget.builder(
+				Text.translatable("boring_default_game_rules.edit_default_game_rules.reset_defaults"),
+				button -> {
+					double scrollAmount = ((EditGameRulesScreenAccessor) EditDefaultGameRulesScreen.this).getRuleListWidget().getScrollAmount();
+					ModConfigManager.resetDefaults();
+					((EditGameRulesScreenAccessor) EditDefaultGameRulesScreen.this).setGameRules(new GameRules());
+					EditDefaultGameRulesScreen.this.clearAndInit();
+					((EditGameRulesScreenAccessor) EditDefaultGameRulesScreen.this).getRuleListWidget().setScrollAmount(scrollAmount);
+				}
+			).position(10, 5)
+			.size(150, 20)
+			.build();
 			this.widgets.add(this.resetButton);
 		}
 
