@@ -13,7 +13,8 @@
     "DoubleRuleAccessor",
     "EnumRuleAccessor",
     "GameRulesAccessor",
-    "GameRulesMixin"
+    "GameRulesMixin",
+    "RuleAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -36,6 +36,7 @@ import net.minecraft.world.GameRules;
 @SuppressWarnings("unchecked")
 public class ModConfigManager {
 	public static final String GENERATE_ME = "GENERATE_ME";
+	public static final String GENERATE_ME_MAYBE = "GENERATE_ME_MAYBE";
 	public static final Path SCHEMA_DIRECTORY_PATH = QuiltLoader.getConfigDir().resolve("boring_default_game_rules");
 	public static final Path SCHEMA_PATH = SCHEMA_DIRECTORY_PATH.resolve("config.schema.json");
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -87,8 +88,9 @@ public class ModConfigManager {
 				}
 			}
 
-			if (SCHEMA.value().equals(GENERATE_ME)) {
-				SCHEMA.setValue(SCHEMA_PATH.toUri().toString(), false);
+			switch (SCHEMA.value()) {
+				case GENERATE_ME -> SCHEMA.setValue(SCHEMA_PATH.toUri().toString(), false);
+				case GENERATE_ME_MAYBE -> SCHEMA.setValue(GENERATE_JSON_SCHEMA.value() ? SCHEMA_PATH.toUri().toString() : "", false);
 			}
 
 			if (generateNewSchema) {

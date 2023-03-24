@@ -37,7 +37,8 @@ public class GameRulesMixin {
 				} else if (rule instanceof BooleanRule booleanRule) {
 					booleanRule.set((Boolean) defaultValue, null);
 				} else if (rule instanceof DoubleRule doubleRule) {
-					((DoubleRuleAccessor)(Object) doubleRule).setValue(((Number) defaultValue).doubleValue());
+					((DoubleRuleAccessor) (Object) doubleRule).setValue(((Number) defaultValue).doubleValue());
+					((RuleAccessor) (Object) doubleRule).callChanged(null);
 				} else if (rule instanceof EnumRule enumRule) {
 					enumRule.set(Enum.valueOf(enumRule.getEnumClass(), (String) defaultValue), null);
 				}

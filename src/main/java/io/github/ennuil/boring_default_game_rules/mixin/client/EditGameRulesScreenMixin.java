@@ -57,7 +57,10 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 				Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.1").asOrderedText(),
 				Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.2").asOrderedText()
 			));
-			this.editButton = ButtonWidget.builder(Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules"), button -> {
+			this.editButton = new ButtonWidget(
+				10, 5,
+				150, 20,
+				Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules"), button -> {
 				EditGameRulesScreenMixin.this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(), gameRulesWrapper -> {
 					EditGameRulesScreenMixin.this.client.setScreen(EditGameRulesScreenMixin.this);
 					gameRulesWrapper.ifPresent(gameRules -> ModConfigManager.updateConfig(gameRules));
@@ -65,10 +68,7 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 					EditGameRulesScreenMixin.this.clearChildren();
 					EditGameRulesScreenMixin.this.init();
 				}));
-			})
-				.position(10, 5)
-				.size(150, 20)
-				.build();
+			});
 			this.widgets.add(this.editButton);
 		}
 
@@ -84,8 +84,8 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.editButton.setX(x + 33);
-			this.editButton.setY(y);
+			this.editButton.x = x + 33;
+			this.editButton.y = y;
 			this.editButton.render(matrices, mouseX, mouseY, tickDelta);
 		}
 	}

@@ -8,7 +8,7 @@ import org.quiltmc.config.api.values.ValueMap;
 @Processor("setSerializer")
 public class ModConfig extends WrappedConfig {
 	// wait, how in the world is this working???
-	public final String $schema = ModConfigManager.GENERATE_ME;
+	public final String $schema = ModConfigManager.GENERATE_ME_MAYBE;
 	public final ValueMap<Object> default_game_rules = ValueMap.builder((Object) "").build();
 	public final boolean generate_json_schema = true;
 

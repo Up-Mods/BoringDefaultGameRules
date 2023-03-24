@@ -37,7 +37,9 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 
 		public ResetButtonWidget() {
 			super(List.of(Text.translatable("boring_default_game_rules.edit_default_game_rules.reset_defaults.tooltip").asOrderedText()));
-			this.resetButton = ButtonWidget.builder(
+			this.resetButton = new ButtonWidget(
+				10, 5,
+				150, 20,
 				Text.translatable("boring_default_game_rules.edit_default_game_rules.reset_defaults"),
 				button -> {
 					double scrollAmount = ((EditGameRulesScreenAccessor) EditDefaultGameRulesScreen.this).getRuleListWidget().getScrollAmount();
@@ -46,9 +48,7 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 					EditDefaultGameRulesScreen.this.clearAndInit();
 					((EditGameRulesScreenAccessor) EditDefaultGameRulesScreen.this).getRuleListWidget().setScrollAmount(scrollAmount);
 				}
-			).position(10, 5)
-			.size(150, 20)
-			.build();
+			);
 			this.widgets.add(this.resetButton);
 		}
 
@@ -64,8 +64,8 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.resetButton.setX(x + 33);
-			this.resetButton.setY(y);
+			this.resetButton.x = x + 33;
+			this.resetButton.y = y;
 			this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
 		}
 	}
