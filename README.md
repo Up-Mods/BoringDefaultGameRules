@@ -2,7 +2,9 @@
 
 # Boring Default Game Rules
 
-A mod that allows for changing the default game rule values. Meant to be used by modpacks, servers and players, because it's useful for everyone! This mod depends on the [Quilt Standard Libraries](https://modrinth.com/mod/qsl).
+A mod that allows for changing the default game rule values. Meant to be used by modpacks, servers and players, because it's useful for everyone!
+
+This mod depends on the [Quilt Standard Libraries](https://modrinth.com/mod/qsl).
 
 ## Download
 

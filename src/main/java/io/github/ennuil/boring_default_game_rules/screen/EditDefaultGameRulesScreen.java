@@ -9,11 +9,11 @@ import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 import io.github.ennuil.boring_default_game_rules.mixin.client.EditGameRulesScreenAccessor;
 import io.github.ennuil.boring_default_game_rules.mixin.client.ScreenAccessor;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 
@@ -63,10 +63,10 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			this.resetButton.setX(x + 33);
 			this.resetButton.setY(y);
-			this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
+			this.resetButton.render(graphics, mouseX, mouseY, tickDelta);
 		}
 	}
 }

@@ -1,9 +1,10 @@
 plugins {
 	id 'maven-publish'
 	alias libs.plugins.quilt.loom
+	alias libs.plugins.machete
 }
 
-archivesBaseName = project.archives_base_name
+base.archivesName = project.archives_base_name
 version = "$project.version+${libs.versions.minecraft.get()}"
 group = project.maven_group
 
@@ -28,7 +29,7 @@ processResources {
 	inputs.property 'version', version
 
 	filesMatching('quilt.mod.json') {
-		expand "version": version
+		expand 'version': version
 	}
 }
 
@@ -54,8 +55,13 @@ java {
 
 jar {
 	from('LICENSE') {
-		rename { "${it}_${archivesBaseName}" }
+		rename { "${it}_${base.archivesName.get()}" }
 	}
+}
+
+machete {
+	// JSON minification isn't effective on this scale and sacrifices readability
+	json.enabled = false
 }
 
 // Configure the maven publication
