@@ -10,6 +10,7 @@ group = project.maven_group
 
 repositories {
 	maven { url 'https://maven.terraformersmc.com/releases/' }
+	maven { url 'https://www.jitpack.io' }
 }
 
 loom {
@@ -37,25 +38,27 @@ dependencies {
 	modImplementation(libs.mod.menu) {
 		transitive = false
 	}
+	modImplementation libs.wrench.wrapper
 
 	implementation libs.quilt.parsers.json
 	shadow(libs.quilt.parsers.json) {
 		transitive = false
 	}
+
+	include libs.wrench.wrapper
 }
 
 processResources {
 	inputs.property 'version', version
 
-	filesMatching('quilt.mod.json') {
+	filesMatching('fabric.mod.json') {
 		expand 'version': version
 	}
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = 'UTF-8'
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-	it.options.release = 17
+	// Minecraft 1.20.6 (24w14a) upwards uses Java 21.
+	it.options.release.set(21)
 }
 
 java {

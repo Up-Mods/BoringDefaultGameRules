@@ -38,7 +38,9 @@ import java.util.Map;
 // A JSONfied version of Quilt Config's Json5Serializer
 // TODO - Contribute something to upstream!
 public final class JsonSerializer implements Serializer {
-	public JsonSerializer() {}
+	public static final JsonSerializer INSTANCE = new JsonSerializer();
+
+	private JsonSerializer() {}
 
 	@Override
 	public String getFileExtension() {

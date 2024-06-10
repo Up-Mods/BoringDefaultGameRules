@@ -4,8 +4,6 @@ import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.GameRules.BooleanRule;
-import net.minecraft.world.GameRules.IntRule;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,7 +18,7 @@ import java.util.Map;
 public class GameRulesMixin {
 	@Shadow
 	@Final
-	private Map<GameRules.Key<?>, GameRules.Rule<?>> rules;
+	private Map<GameRules.Key<?>, GameRules.AbstractGameRule<?>> gameRules;
 
 	@Inject(method = "<init>()V", at = @At("TAIL"))
 	private <E extends Enum<E>> void overrideDefaults(CallbackInfo info) {
@@ -28,12 +26,12 @@ public class GameRulesMixin {
 
 		if (ModConfigManager.CONFIG.defaultGameRules.value().isEmpty()) return;
 
-		this.rules.forEach((key, rule) -> ModConfigManager.CONFIG.defaultGameRules.value().forEach((defaultKey, defaultValue) -> {
+		this.gameRules.forEach((key, rule) -> ModConfigManager.CONFIG.defaultGameRules.value().forEach((defaultKey, defaultValue) -> {
 			if (key.getName().equals(defaultKey)) {
-				if (rule instanceof IntRule intRule) {
-					intRule.set(((Number) defaultValue).intValue(), null);
-				} else if (rule instanceof BooleanRule booleanRule) {
-					booleanRule.set((Boolean) defaultValue, null);
+				if (rule instanceof GameRules.IntGameRule intRule) {
+					intRule.setValue(((Number) defaultValue).intValue(), null);
+				} else if (rule instanceof GameRules.BooleanGameRule booleanRule) {
+					booleanRule.setValue((Boolean) defaultValue, null);
 				} else if (rule instanceof DoubleRule doubleRule) {
 					((DoubleRuleAccessor) (Object) doubleRule).setValue(((Number) defaultValue).doubleValue());
 					doubleRule.changed(null);

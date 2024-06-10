@@ -7,17 +7,20 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.button.ButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 @Mixin(EditGameRulesScreen.class)
 public abstract class EditGameRulesScreenMixin extends Screen {
@@ -26,24 +29,33 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 	}
 
 	@Shadow
-	private EditGameRulesScreen.RuleListWidget ruleListWidget;
+	private EditGameRulesScreen.GameRuleElementListWidget field_49903;
 
 	@Shadow
 	@Final
 	@Mutable
 	private GameRules gameRules;
 
+	@Shadow
+	@Final
+	private Consumer<Optional<GameRules>> ruleSaver;
+
 	@Inject(method = "init()V", at = @At("TAIL"))
 	private void addEditDefaultsButton(CallbackInfo ci) {
 		// Don't let the button appear on screens that extends this screen
 		if (((EditGameRulesScreen) (Object) this).getClass() == EditGameRulesScreen.class) {
-			this.ruleListWidget.children().add(new EditDefaultsButtonWidget());
+			this.field_49903.children().add(new EditDefaultsButtonWidget());
 		}
+	}
+
+	@ModifyArg(method = "init()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/layout/HeaderFooterLayoutWidget;method_57726(Lnet/minecraft/text/Text;Lnet/minecraft/client/font/TextRenderer;)V"))
+	private Text modifyTitle(Text original) {
+		return this.title;
 	}
 
 	@SuppressWarnings("all")
 	@Unique
-	public class EditDefaultsButtonWidget extends EditGameRulesScreen.AbstractRuleWidget {
+	public class EditDefaultsButtonWidget extends EditGameRulesScreen.AbstractEntry {
 		private final ButtonWidget editButton;
 		private final List<ClickableWidget> widgets = new ArrayList<>();
 
@@ -54,11 +66,11 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 			));
 			this.editButton = ButtonWidget.builder(Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules"), button -> {
 				EditGameRulesScreenMixin.this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(), gameRulesWrapper -> {
-					EditGameRulesScreenMixin.this.client.setScreen(EditGameRulesScreenMixin.this);
-					gameRulesWrapper.ifPresent(gameRules -> ModConfigManager.updateConfig(gameRules));
-					EditGameRulesScreenMixin.this.gameRules = new GameRules();
-					EditGameRulesScreenMixin.this.clearChildren();
-					EditGameRulesScreenMixin.this.init();
+					gameRulesWrapper.ifPresentOrElse(gameRules -> {
+						ModConfigManager.updateConfig(gameRules);
+						EditGameRulesScreenMixin.this.ruleSaver.accept(Optional.of(gameRules));
+						EditGameRulesScreenMixin.this.client.setScreen(new EditGameRulesScreen(gameRules, EditGameRulesScreenMixin.this.ruleSaver));
+					}, () -> EditGameRulesScreenMixin.this.client.setScreen(EditGameRulesScreenMixin.this));
 				}));
 			})
 				.position(10, 5)

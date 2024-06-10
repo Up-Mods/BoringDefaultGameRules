@@ -1,24 +1,26 @@
 # The latest versions are available at https://quiltmc.org/en/usage/latest-versions
 [versions]
-minecraft = "1.20.1"
-quilt_mappings = "1.20.1+build.23"
+minecraft = "1.20.6"
+quilt_mappings = "1.20.6+build.6"
 
 quilt_loom = "1.6.8"
 quilt_loader = "0.26.0"
 shadow = "8.1.7"
 
-quilted_fabric_api = "7.5.0+0.91.0-1.20.1"
-mod_menu = "7.2.2"
+fabric_api = "0.100.0+1.20.6"
+mod_menu = "10.0.0-beta.1"
 quilt_parsers_json = "0.3.0"
+wrench_wrapper = "a29721e25d" # 0.1.0+1.20.4
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 quilt_mappings = { module = "org.quiltmc:quilt-mappings", version.ref = "quilt_mappings" }
 quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
 
-quilted_fabric_api = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "quilted_fabric_api" }
+quilted_fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
 mod_menu = { module = "com.terraformersmc:modmenu", version.ref = "mod_menu" }
 quilt_parsers_json = { module = "org.quiltmc.parsers:json", version.ref = "quilt_parsers_json" }
+wrench_wrapper = { module = "com.github.Up-Mods:wrench_wrapper", version.ref = "wrench_wrapper" }
 
 [plugins]
 quilt_loom = { id = "org.quiltmc.loom", version.ref = "quilt_loom" }
