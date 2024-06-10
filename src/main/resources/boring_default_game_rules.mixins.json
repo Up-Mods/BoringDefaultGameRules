@@ -3,17 +3,13 @@
   "package": "io.github.ennuil.boring_default_game_rules.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "client.EditGameRulesScreenAccessor",
-    "client.EditGameRulesScreenMixin",
-    "client.ScreenAccessor"
+    "client.EditGameRulesScreenMixin"
   ],
   "mixins": [
     "BoundedIntRuleAccessor",
     "DoubleRuleAccessor",
     "EnumRuleAccessor",
-    "GameRulesAccessor",
-    "GameRulesMixin",
-    "RuleAccessor"
+    "GameRulesMixin"
   ],
   "injectors": {
     "defaultRequire": 1

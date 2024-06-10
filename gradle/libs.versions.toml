@@ -1,11 +1,15 @@
+# The latest versions are available at https://quiltmc.org/en/usage/latest-versions
 [versions]
-# The latest versions are available at https://lambdaurora.dev/tools/import_quilt.html
-minecraft = "1.20"
-quilt_mappings = "1.20+build.1"
-quilt_loader = "0.18.10"
+minecraft = "1.20.1"
+quilt_mappings = "1.20.1+build.23"
 
-quilted_fabric_api = "7.0.0+0.83.0-1.20"
-mod_menu = "7.0.0"
+quilt_loom = "1.6.8"
+quilt_loader = "0.26.0"
+shadow = "8.1.7"
+
+quilted_fabric_api = "7.5.0+0.91.0-1.20.1"
+mod_menu = "7.2.2"
+quilt_parsers_json = "0.3.0"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -14,7 +18,8 @@ quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loade
 
 quilted_fabric_api = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "quilted_fabric_api" }
 mod_menu = { module = "com.terraformersmc:modmenu", version.ref = "mod_menu" }
+quilt_parsers_json = { module = "org.quiltmc.parsers:json", version.ref = "quilt_parsers_json" }
 
 [plugins]
-quilt_loom = { id = "org.quiltmc.loom", version = "1.2.+" }
-machete = { id = "io.github.p03w.machete", version = "2.0.+" }
+quilt_loom = { id = "org.quiltmc.loom", version.ref = "quilt_loom" }
+shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }

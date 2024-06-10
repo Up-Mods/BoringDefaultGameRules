@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 QuiltMC
+ * Copyright 2022-2024 QuiltMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,24 @@
 
 package io.github.ennuil.boring_default_game_rules.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import org.quiltmc.config.api.Config;
+import org.quiltmc.config.api.MarshallingUtils;
+import org.quiltmc.config.api.Serializer;
+import org.quiltmc.config.api.exceptions.ConfigParseException;
+import org.quiltmc.config.api.values.*;
+import org.quiltmc.config.impl.tree.TrackedValueImpl;
+import org.quiltmc.config.impl.util.SerializerUtils;
+import org.quiltmc.parsers.json.JsonReader;
+import org.quiltmc.parsers.json.JsonToken;
+import org.quiltmc.parsers.json.JsonWriter;
+
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.quiltmc.config.api.Config;
-import org.quiltmc.config.api.MarshallingUtils;
-import org.quiltmc.config.api.Serializer;
-import org.quiltmc.config.api.exceptions.ConfigParseException;
-import org.quiltmc.config.api.values.ConfigSerializableObject;
-import org.quiltmc.config.api.values.TrackedValue;
-import org.quiltmc.config.api.values.ValueList;
-import org.quiltmc.config.api.values.ValueMap;
-import org.quiltmc.config.api.values.ValueTreeNode;
-import org.quiltmc.config.impl.tree.TrackedValueImpl;
-import org.quiltmc.json5.JsonReader;
-import org.quiltmc.json5.JsonToken;
-import org.quiltmc.json5.JsonWriter;
 
 // A JSONfied version of Quilt Config's Json5Serializer
 // TODO - Contribute something to upstream!
@@ -109,7 +102,7 @@ public final class JsonSerializer implements Serializer {
 			writer.endObject();
 		} else {
 			TrackedValue<?> trackedValue = ((TrackedValue<?>) node);
-			writer.name(node.key().getLastComponent());
+			writer.name(SerializerUtils.getSerializedName(trackedValue));
 
 			serialize(writer, trackedValue.getRealValue());
 		}
@@ -133,21 +126,23 @@ public final class JsonSerializer implements Serializer {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void deserialize(Config config, InputStream from) {
 		try {
-			JsonReader reader = JsonReader.json(new InputStreamReader(from));
+			var reader = JsonReader.json(new InputStreamReader(from));
 
 			Map<String, Object> values = parseObject(reader);
 
 			for (TrackedValue<?> value : config.values()) {
 				Map<String, Object> m = values;
+				List<ValueKey> keyOptions = SerializerUtils.getPossibleKeys(config, value);
 
-				for (int i = 0; i < value.key().length(); ++i) {
-					String k = value.key().getKeyComponent(i);
-
-					if (m.containsKey(k) && i != value.key().length() - 1) {
-						m = (Map<String, Object>) m.get(k);
-					} else if (m.containsKey(k)) {
-						((TrackedValueImpl) value).setValue(MarshallingUtils.coerce(m.get(k), value.getDefaultValue(), (Map<String, ?> map, MarshallingUtils.MapEntryConsumer entryConsumer) ->
+				for (ValueKey key : keyOptions) {
+					for (int i = 0; i < key.length(); i++) {
+						String name = key.getKeyComponent(i);
+						if (m.containsKey(name) && i != key.length() - 1) {
+							m = (Map<String, Object>) m.get(name);
+						} else if (m.containsKey(name)) {
+							((TrackedValueImpl) value).setValue(MarshallingUtils.coerce(m.get(name), value.getDefaultValue(), (Map<String, ?> map, MarshallingUtils.MapEntryConsumer entryConsumer) ->
 								map.forEach(entryConsumer::put)), false);
+						}
 					}
 				}
 			}

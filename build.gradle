@@ -1,7 +1,7 @@
 plugins {
 	id 'maven-publish'
 	alias libs.plugins.quilt.loom
-	alias libs.plugins.machete
+	alias libs.plugins.shadow
 }
 
 base.archivesName = project.archives_base_name
@@ -12,6 +12,20 @@ repositories {
 	maven { url 'https://maven.terraformersmc.com/releases/' }
 }
 
+loom {
+	mods {
+		"boring_default_game_rules" {
+			sourceSet('main')
+		}
+	}
+
+	mixin {
+		useLegacyMixinAp = false
+	}
+
+	accessWidenerPath = file("src/main/resources/boring_default_game_rules.accesswidener")
+}
+
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
@@ -19,10 +33,15 @@ dependencies {
 	mappings variantOf(libs.quilt.mappings) { classifier 'intermediary-v2' }
 	modImplementation libs.quilt.loader
 
-	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
-	// Quilted Fabric API will automatically pull in the correct QSL version.
 	modImplementation libs.quilted.fabric.api
-	modImplementation libs.mod.menu
+	modImplementation(libs.mod.menu) {
+		transitive = false
+	}
+
+	implementation libs.quilt.parsers.json
+	shadow(libs.quilt.parsers.json) {
+		transitive = false
+	}
 }
 
 processResources {
@@ -40,10 +59,6 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
-	// Still required by IDEs such as Eclipse and Visual Studio Code
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
-
 	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task if it is present.
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
@@ -53,15 +68,28 @@ java {
 	// withJavadocJar()
 }
 
-jar {
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+remapJar {
+	archiveClassifier = 'shadowless'
+}
+
+tasks.register('shadowRemapJar', ShadowJar).configure {
+	dependsOn remapJar
+	from remapJar.outputs
+
 	from('LICENSE') {
 		rename { "${it}_${base.archivesName.get()}" }
 	}
+
+	archiveClassifier = null
+	configurations = [ project.configurations.shadow ]
+
+	relocate 'org.quiltmc.parsers', 'io.github.ennuil.quilt_parsers'
 }
 
-machete {
-	// JSON minification isn't effective on this scale and sacrifices readability
-	json.enabled = false
+tasks.named('build').configure {
+	dependsOn tasks.named('shadowRemapJar')
 }
 
 // Configure the maven publication

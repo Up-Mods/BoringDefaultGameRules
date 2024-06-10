@@ -8,7 +8,8 @@
 			"name": "Boring Default Game Rules",
 			"description": "A mod that lets you override the default game rule values. You can configure it by either the new \"Edit Default Game Rules\" button on the bottom of the Game Rules list, through the Mod Menu config screen, or if outside the game, by editing the config file (located at .minecraft/config/boring_default_game_rules/config.json), which is simple and painless thanks to JSON Schemas!",
 			"contributors": {
-				"Ennui Langeweile": "Owner"
+				"Ennui Langeweile": "Owner",
+				"Up": "Developer"
 			},
 			"contact": {
 				"homepage": "https://modrinth.com/mod/boring-default-game-rules",
@@ -31,7 +32,7 @@
 		"depends": [
 			{
 				"id": "quilt_loader",
-				"versions": ">=0.18.10-"
+				"versions": ">=0.26.0"
 			},
 			{
 				"id": "quilted_fabric_api",
@@ -43,5 +44,6 @@
 			}
 		]
 	},
-	"mixin": "boring_default_game_rules.mixins.json"
+	"mixin": "boring_default_game_rules.mixins.json",
+	"access_widener": "boring_default_game_rules.accesswidener"
 }

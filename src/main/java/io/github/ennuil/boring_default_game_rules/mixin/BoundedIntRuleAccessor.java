@@ -1,9 +1,8 @@
 package io.github.ennuil.boring_default_game_rules.mixin;
 
+import net.fabricmc.fabric.impl.gamerule.rule.BoundedIntRule;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-
-import net.fabricmc.fabric.impl.gamerule.rule.BoundedIntRule;
 
 @Mixin(BoundedIntRule.class)
 public interface BoundedIntRuleAccessor {

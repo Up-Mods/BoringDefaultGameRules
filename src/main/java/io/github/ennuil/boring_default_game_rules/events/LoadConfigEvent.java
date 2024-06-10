@@ -9,11 +9,11 @@ import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 public class LoadConfigEvent implements ClientModInitializer, DedicatedServerModInitializer {
 	@Override
 	public void onInitializeClient(ModContainer mod) {
-		ModConfigManager.init();
+		ModConfigManager.init(true);
 	}
 
 	@Override
 	public void onInitializeServer(ModContainer mod) {
-		ModConfigManager.init();
+		ModConfigManager.init(false);
 	}
 }
