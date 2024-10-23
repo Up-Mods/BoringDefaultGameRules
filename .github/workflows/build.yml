@@ -15,6 +15,8 @@ jobs:
         java-version: '21'
     - name: Build with Gradle
       run: gradle build
+    - name: Detonate JARs
+      run: python ./ci/hissboom.py "./build/libs/*.jar"
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:

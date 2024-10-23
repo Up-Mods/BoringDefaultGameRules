@@ -34,8 +34,9 @@ import java.util.List;
 public class ModConfigManager {
 	public static final String GENERATE_ME = "GENERATE_ME";
 	public static final String GENERATE_ME_MAYBE = "GENERATE_ME_MAYBE";
+	public static final String SCHEMA_FILE_NAME = "config.schema.json";
 	public static final Path SCHEMA_DIRECTORY_PATH = WrenchWrapper.getConfigDir().resolve("boring_default_game_rules");
-	public static final Path SCHEMA_PATH = SCHEMA_DIRECTORY_PATH.resolve("config.schema.json");
+	public static final Path SCHEMA_PATH = SCHEMA_DIRECTORY_PATH.resolve(SCHEMA_FILE_NAME);
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	public static final ModConfig CONFIG = WrenchWrapper.create("boring_default_game_rules", "config", ModConfig.class);
@@ -82,8 +83,8 @@ public class ModConfigManager {
 			}
 
 			switch (CONFIG.schema.value()) {
-				case GENERATE_ME -> CONFIG.schema.setValue(SCHEMA_PATH.toUri().toString(), false);
-				case GENERATE_ME_MAYBE -> CONFIG.schema.setValue(CONFIG.generateJsonSchema.value() ? SCHEMA_PATH.toUri().toString() : "", false);
+				case GENERATE_ME -> CONFIG.schema.setValue(SCHEMA_FILE_NAME, false);
+				case GENERATE_ME_MAYBE -> CONFIG.schema.setValue(CONFIG.generateJsonSchema.value() ? SCHEMA_FILE_NAME : "", false);
 			}
 
 			if (generateNewSchema) {

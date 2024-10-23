@@ -1,5 +1,6 @@
 package io.github.ennuil.boring_default_game_rules.mixin.client;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 import io.github.ennuil.boring_default_game_rules.screen.EditDefaultGameRulesScreen;
 import net.minecraft.client.gui.Element;
@@ -29,12 +30,7 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 	}
 
 	@Shadow
-	private EditGameRulesScreen.GameRuleElementListWidget field_49903;
-
-	@Shadow
-	@Final
-	@Mutable
-	private GameRules gameRules;
+	public EditGameRulesScreen.GameRuleElementListWidget rulesList;
 
 	@Shadow
 	@Final
@@ -44,11 +40,11 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 	private void addEditDefaultsButton(CallbackInfo ci) {
 		// Don't let the button appear on screens that extends this screen
 		if (((EditGameRulesScreen) (Object) this).getClass() == EditGameRulesScreen.class) {
-			this.field_49903.children().add(new EditDefaultsButtonWidget());
+			this.rulesList.children().add(new EditDefaultsButtonWidget());
 		}
 	}
 
-	@ModifyArg(method = "init()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/layout/HeaderFooterLayoutWidget;method_57726(Lnet/minecraft/text/Text;Lnet/minecraft/client/font/TextRenderer;)V"))
+	@ModifyExpressionValue(method = "init()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/world/EditGameRulesScreen;TITLE:Lnet/minecraft/text/Text;"))
 	private Text modifyTitle(Text original) {
 		return this.title;
 	}

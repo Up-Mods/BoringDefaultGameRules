@@ -10,7 +10,7 @@ group = project.maven_group
 
 repositories {
 	maven { url 'https://maven.terraformersmc.com/releases/' }
-	maven { url 'https://www.jitpack.io' }
+	maven { url 'https://maven.uuid.gg/releases' }
 }
 
 loom {
@@ -38,7 +38,7 @@ dependencies {
 	modImplementation(libs.mod.menu) {
 		transitive = false
 	}
-	modImplementation libs.wrench.wrapper
+	modCompileOnly libs.wrench.wrapper
 
 	implementation libs.quilt.parsers.json
 	shadow(libs.quilt.parsers.json) {

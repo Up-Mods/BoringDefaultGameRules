@@ -1,6 +1,6 @@
 accessWidener v2 named
 
-accessible field net/minecraft/client/gui/screen/world/EditGameRulesScreen field_49903 Lnet/minecraft/client/gui/screen/world/EditGameRulesScreen$GameRuleElementListWidget;
+accessible field net/minecraft/client/gui/screen/world/EditGameRulesScreen rulesList Lnet/minecraft/client/gui/screen/world/EditGameRulesScreen$GameRuleElementListWidget;
 accessible field net/minecraft/client/gui/screen/world/EditGameRulesScreen gameRules Lnet/minecraft/world/GameRules;
 accessible field net/minecraft/client/gui/screen/Screen title Lnet/minecraft/text/Text;
 accessible field net/minecraft/world/GameRules GAME_RULE_TYPES Ljava/util/Map;

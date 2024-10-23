@@ -26,7 +26,7 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 	protected void init() {
 		super.init();
 		var button = new ResetButtonWidget();
-		EditDefaultGameRulesScreen.this.field_49903.children().add(button);
+		EditDefaultGameRulesScreen.this.rulesList.children().add(button);
 	}
 
 	public class ResetButtonWidget extends EditGameRulesScreen.AbstractEntry {
@@ -38,11 +38,11 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 			this.resetButton = ButtonWidget.builder(
 				Text.translatable("boring_default_game_rules.edit_default_game_rules.reset_defaults"),
 				button -> {
-					double scrollAmount = EditDefaultGameRulesScreen.this.field_49903.getScrollAmount();
+					double scrollAmount = EditDefaultGameRulesScreen.this.rulesList.getScrollAmount();
 					ModConfigManager.resetDefaults();
 					EditDefaultGameRulesScreen.this.gameRules = new GameRules();
 					EditDefaultGameRulesScreen.this.repositionElements();
-					EditDefaultGameRulesScreen.this.field_49903.setScrollAmount(scrollAmount);
+					EditDefaultGameRulesScreen.this.rulesList.setScrollAmount(scrollAmount);
 				}
 			).position(10, 5)
 			.size(150, 20)

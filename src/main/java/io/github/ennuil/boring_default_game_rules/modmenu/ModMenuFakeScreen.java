@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 
-// By having a fake screen, the screen caching, which is undesirable for us, is busted. Thanks for the code, ARRFAB!
+// By having a fake screen, the screen caching, which is undesirable for us, is busted.
 public class ModMenuFakeScreen extends Screen {
     private final Screen parent;
 
