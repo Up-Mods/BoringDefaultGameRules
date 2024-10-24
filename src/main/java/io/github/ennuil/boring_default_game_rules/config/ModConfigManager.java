@@ -32,8 +32,6 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class ModConfigManager {
-	public static final String GENERATE_ME = "GENERATE_ME";
-	public static final String GENERATE_ME_MAYBE = "GENERATE_ME_MAYBE";
 	public static final String SCHEMA_FILE_NAME = "config.schema.json";
 	public static final Path SCHEMA_DIRECTORY_PATH = WrenchWrapper.getConfigDir().resolve("boring_default_game_rules");
 	public static final Path SCHEMA_PATH = SCHEMA_DIRECTORY_PATH.resolve(SCHEMA_FILE_NAME);
@@ -80,11 +78,6 @@ public class ModConfigManager {
 				} else {
 					generateNewSchema = true;
 				}
-			}
-
-			switch (CONFIG.schema.value()) {
-				case GENERATE_ME -> CONFIG.schema.setValue(SCHEMA_FILE_NAME, false);
-				case GENERATE_ME_MAYBE -> CONFIG.schema.setValue(CONFIG.generateJsonSchema.value() ? SCHEMA_FILE_NAME : "", false);
 			}
 
 			if (generateNewSchema) {
@@ -312,7 +305,8 @@ public class ModConfigManager {
 		var schemaPropertyObject = new JsonObject();
 		schemaPropertyObject.addProperty("type", "string");
 		schemaPropertyObject.addProperty("title", "$schema");
-		schemaPropertyObject.addProperty("description", "The standard method of assigning a JSON schema to a JSON file. If the value is set as \"GENERATE_ME\", Boring Default Game Rules will regenerate the path to the schema.");
+		schemaPropertyObject.addProperty("description", "The standard method of assigning a JSON schema to a JSON file. This should either be set as \"config.schema.json\" always!");
+		schemaPropertyObject.addProperty("default", SCHEMA_FILE_NAME);
 
 		propertiesObject.add("$schema", schemaPropertyObject);
 
@@ -328,6 +322,7 @@ public class ModConfigManager {
 		generateJSONSchemaObject.addProperty("type", "boolean");
 		generateJSONSchemaObject.addProperty("title", "Generate JSON Schema");
 		generateJSONSchemaObject.addProperty("description", "If enabled, this mod will generate a JSON schema in order to aid with configuration. You may disable this if you don't plan to change the settings and want to save space, and once disabled, you can safely remove both the schema and the \"$schema\" property.");
+		generateJSONSchemaObject.addProperty("default", true);
 		propertiesObject.add("generate_json_schema", generateJSONSchemaObject);
 
 		schemaObject.add("properties", propertiesObject);

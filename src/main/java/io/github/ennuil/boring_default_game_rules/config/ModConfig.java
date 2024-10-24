@@ -13,7 +13,7 @@ import org.quiltmc.config.api.values.ValueMap;
 @SerializedNameConvention(NamingSchemes.SNAKE_CASE)
 public class ModConfig extends ReflectiveConfig {
 	@SerializedName("$schema")
-	public final TrackedValue<String> schema = value(ModConfigManager.GENERATE_ME_MAYBE);
+	public final TrackedValue<String> schema = value(ModConfigManager.SCHEMA_FILE_NAME);
 	public final TrackedValue<ValueMap<Object>> defaultGameRules = map((Object) "").build();
 	public final TrackedValue<Boolean> generateJsonSchema = value(true);
 
