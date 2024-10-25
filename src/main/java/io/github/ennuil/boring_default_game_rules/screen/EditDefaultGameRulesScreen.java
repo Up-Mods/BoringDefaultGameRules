@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.button.ButtonWidget;
+import net.minecraft.feature_flags.FeatureFlags;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 
@@ -40,7 +41,7 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 				button -> {
 					double scrollAmount = EditDefaultGameRulesScreen.this.rulesList.getScrollAmount();
 					ModConfigManager.resetDefaults();
-					EditDefaultGameRulesScreen.this.gameRules = new GameRules();
+					EditDefaultGameRulesScreen.this.gameRules = new GameRules(FeatureFlags.MAIN_REGISTRY.setOf());
 					EditDefaultGameRulesScreen.this.repositionElements();
 					EditDefaultGameRulesScreen.this.rulesList.setScrollAmount(scrollAmount);
 				}

@@ -16,6 +16,8 @@ import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 import net.fabricmc.fabric.impl.gamerule.rule.BoundedIntRule;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.feature_flags.FeatureFlagBitSet;
+import net.minecraft.feature_flags.FeatureFlags;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Language;
@@ -29,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class ModConfigManager {
@@ -42,7 +45,7 @@ public class ModConfigManager {
 	private static JsonObject defaultGameRulesProperties;
 	private static String newSchemaHash = "";
 
-	private static boolean initialized = false;
+	private static boolean active = false;
 
 	private ModConfigManager() {}
 
@@ -51,13 +54,11 @@ public class ModConfigManager {
 		ModConfigManager.prepareSchema(client);
 		CONFIG.save();
 
-		ModConfigManager.initialized = true;
+		ModConfigManager.active = true;
 	}
 
-	public static void validateInit() {
-		if (!initialized) {
-			throw new IllegalStateException("The mod config manager has been initialized way too early! Something went wrong in the process!");
-		}
+	public static boolean isActive() {
+		return ModConfigManager.active;
 	}
 
 	public static void prepareSchema(boolean client) {
@@ -107,10 +108,10 @@ public class ModConfigManager {
 
 	public static void updateConfig(GameRules newGameRules) {
 		CONFIG.defaultGameRules.value().clear();
-		var defaultGameRules = new GameRules();
+		var defaultGameRules = new GameRules(FeatureFlags.MAIN_REGISTRY.setOf());
 
 		if (newGameRules != null) {
-			GameRules.accept(new FabricGameRuleVisitor() {
+			defaultGameRules.accept(new FabricGameRuleVisitor() {
 				@Override
 				public void visitBooleanGameRule(GameRules.Key<GameRules.BooleanGameRule> key, GameRules.Type<GameRules.BooleanGameRule> type) {
 					if (newGameRules.get(key).getValue() != defaultGameRules.get(key).getValue()) {
@@ -145,8 +146,10 @@ public class ModConfigManager {
 	}
 
 	private static void generateGameRulePropertiesOnClient() {
+		var allGameRules = new GameRules(FeatureFlags.MAIN_REGISTRY.setOf());
 		defaultGameRulesProperties = new JsonObject();
-		GameRules.accept(new FabricGameRuleVisitor() {
+
+		allGameRules.accept(new FabricGameRuleVisitor() {
 			@Override
 			public void visitBooleanGameRule(GameRules.Key<GameRules.BooleanGameRule> key, GameRules.Type<GameRules.BooleanGameRule> type) {
 				addBooleanGameRule(
@@ -170,6 +173,7 @@ public class ModConfigManager {
 						I18n.hasTranslation(key.getTranslationKey() + ".description")
 							? Text.translatable(key.getTranslationKey() + ".description").getString()
 							: null,
+						joinFeatureFlagsOnClient(type.method_61728()),
 						boundedType.getValue(),
 						minimum,
 						maximum);
@@ -180,6 +184,7 @@ public class ModConfigManager {
 						I18n.hasTranslation(key.getTranslationKey() + ".description")
 							? Text.translatable(key.getTranslationKey() + ".description").getString()
 							: null,
+						joinFeatureFlagsOnClient(type.method_61728()),
 						type.createGameRule().getValue(),
 						type.argumentType.get() instanceof IntegerArgumentType intArgType ? intArgType.getMinimum() : null,
 						type.argumentType.get() instanceof IntegerArgumentType intArgType ? intArgType.getMaximum() : null);
@@ -219,8 +224,10 @@ public class ModConfigManager {
 	}
 
 	private static void generateGameRulePropertiesOnServer() {
+		var allGameRules = new GameRules(FeatureFlags.MAIN_REGISTRY.setOf());
 		defaultGameRulesProperties = new JsonObject();
-		GameRules.accept(new FabricGameRuleVisitor() {
+
+		allGameRules.accept(new FabricGameRuleVisitor() {
 			final Language language = Language.getInstance();
 
 			@Override
@@ -228,9 +235,7 @@ public class ModConfigManager {
 				addBooleanGameRule(
 					key.getName(),
 					language.get(key.getTranslationKey()),
-					language.hasTranslation(key.getTranslationKey() + ".description")
-						? language.get(key.getTranslationKey() + ".description")
-						: null,
+					language.get(key.getTranslationKey() + ".description", null),
 					type.createGameRule().getValue());
 			}
 
@@ -242,9 +247,8 @@ public class ModConfigManager {
 					addIntegerGameRule(
 						key.getName(),
 						language.get(key.getTranslationKey()),
-						language.hasTranslation(key.getTranslationKey() + ".description")
-							? language.get(key.getTranslationKey() + ".description")
-							: null,
+						language.get(key.getTranslationKey() + ".description", null),
+						joinFeatureFlagsOnServer(type.method_61728(), language),
 						boundedType.getValue(),
 						minimum,
 						maximum);
@@ -252,9 +256,8 @@ public class ModConfigManager {
 					addIntegerGameRule(
 						key.getName(),
 						language.get(key.getTranslationKey()),
-						language.hasTranslation(key.getTranslationKey() + ".description")
-							? language.get(key.getTranslationKey() + ".description")
-							: null,
+						language.get(key.getTranslationKey() + ".description", null),
+						joinFeatureFlagsOnServer(type.method_61728(), language),
 						type.createGameRule().getValue(),
 						type.argumentType.get() instanceof IntegerArgumentType intArgType ? intArgType.getMinimum() : null,
 						type.argumentType.get() instanceof IntegerArgumentType intArgType ? intArgType.getMaximum() : null);
@@ -269,9 +272,7 @@ public class ModConfigManager {
 				addDoubleGameRule(
 					key.getName(),
 					language.get(key.getTranslationKey()),
-					language.hasTranslation(key.getTranslationKey() + ".description")
-						? language.get(key.getTranslationKey() + ".description")
-						: null,
+					language.get(key.getTranslationKey() + ".description", null),
 					doubleRule.get(),
 					minimum,
 					maximum);
@@ -283,13 +284,19 @@ public class ModConfigManager {
 				addEnumGameRule(
 					key.getName(),
 					language.get(key.getTranslationKey()),
-					language.hasTranslation(key.getTranslationKey() + ".description")
-						? language.get(key.getTranslationKey() + ".description")
-						: null,
+					language.get(key.getTranslationKey() + ".description", null),
 					enumRule.get(),
 					((EnumRuleAccessor<E>) (Object) enumRule).getSupportedValues());
 			}
 		});
+	}
+
+	private static String joinFeatureFlagsOnClient(FeatureFlagBitSet set) {
+		return FeatureFlags.MAIN_REGISTRY.getFlagIds(set).stream().map(id -> "dataPack." + id.getPath() + ".name").map(I18n::translate).collect(Collectors.joining(", "));
+	}
+
+	private static String joinFeatureFlagsOnServer(FeatureFlagBitSet set, Language language) {
+		return FeatureFlags.MAIN_REGISTRY.getFlagIds(set).stream().map(id -> "dataPack." + id.getPath() + ".name").map(language::get).collect(Collectors.joining(", "));
 	}
 
 	private static JsonObject createSchemaObject(String hashCode) {
@@ -348,13 +355,23 @@ public class ModConfigManager {
 		defaultGameRulesProperties.add(name, booleanGameRuleObject);
 	}
 
-	private static void addIntegerGameRule(String name, String visualName, @Nullable String description, int defaultValue, @Nullable Integer minimum, @Nullable Integer maximum) {
+	private static void addIntegerGameRule(String name, String visualName, @Nullable String description, String set, int defaultValue, @Nullable Integer minimum, @Nullable Integer maximum) {
 		JsonObject integerGameRuleObject = new JsonObject();
 		integerGameRuleObject.addProperty("type", "integer");
 		integerGameRuleObject.addProperty("title", visualName);
+		String descriptionString = "";
 		if (description != null) {
-			integerGameRuleObject.addProperty("description", description);
+			descriptionString += description;
 		}
+
+		if (!set.isEmpty()) {
+			descriptionString += ((description != null) ? " " : "") + "Exclusive on: " + set;
+		}
+
+		if (!descriptionString.isEmpty()) {
+			integerGameRuleObject.addProperty("description", descriptionString);
+		}
+
 		integerGameRuleObject.addProperty("default", defaultValue);
 
 		if (minimum != null && minimum != Integer.MIN_VALUE) {

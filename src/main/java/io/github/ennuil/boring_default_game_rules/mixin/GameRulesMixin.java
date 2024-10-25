@@ -20,10 +20,9 @@ public class GameRulesMixin {
 	@Final
 	private Map<GameRules.Key<?>, GameRules.AbstractGameRule<?>> gameRules;
 
-	@Inject(method = "<init>()V", at = @At("TAIL"))
-	private <E extends Enum<E>> void overrideDefaults(CallbackInfo info) {
-		ModConfigManager.validateInit();
-
+	@Inject(method = "<init>(Lnet/minecraft/feature_flags/FeatureFlagBitSet;)V", at = @At("TAIL"))
+	private void overrideDefaults(CallbackInfo info) {
+		if (!ModConfigManager.isActive()) return;
 		if (ModConfigManager.CONFIG.defaultGameRules.value().isEmpty()) return;
 
 		this.gameRules.forEach((key, rule) -> ModConfigManager.CONFIG.defaultGameRules.value().forEach((defaultKey, defaultValue) -> {

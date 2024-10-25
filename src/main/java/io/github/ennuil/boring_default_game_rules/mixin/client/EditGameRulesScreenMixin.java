@@ -10,12 +10,15 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.button.ButtonWidget;
+import net.minecraft.feature_flags.FeatureFlags;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
@@ -61,7 +64,7 @@ public abstract class EditGameRulesScreenMixin extends Screen {
 				Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.2").asOrderedText()
 			));
 			this.editButton = ButtonWidget.builder(Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules"), button -> {
-				EditGameRulesScreenMixin.this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(), gameRulesWrapper -> {
+				EditGameRulesScreenMixin.this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(FeatureFlags.MAIN_REGISTRY.setOf()), gameRulesWrapper -> {
 					gameRulesWrapper.ifPresentOrElse(gameRules -> {
 						ModConfigManager.updateConfig(gameRules);
 						EditGameRulesScreenMixin.this.ruleSaver.accept(Optional.of(gameRules));

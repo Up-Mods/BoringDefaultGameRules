@@ -3,6 +3,7 @@ package io.github.ennuil.boring_default_game_rules.modmenu;
 import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 import io.github.ennuil.boring_default_game_rules.screen.EditDefaultGameRulesScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.feature_flags.FeatureFlags;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 
@@ -18,7 +19,7 @@ public class ModMenuFakeScreen extends Screen {
     @Override
     protected void init() {
 		ModConfigManager.prepareSchema(true);
-        this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(), gameRulesWrapper -> {
+        this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(FeatureFlags.MAIN_REGISTRY.setOf()), gameRulesWrapper -> {
 			this.client.setScreen(this.parent);
 			gameRulesWrapper.ifPresent(ModConfigManager::updateConfig);
 		}));
