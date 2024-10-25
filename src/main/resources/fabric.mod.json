@@ -28,7 +28,7 @@
 	"mixins": ["boring_default_game_rules.mixins.json"],
 	"accessWidener": "boring_default_game_rules.accesswidener",
 	"depends": {
-		"fabricloader": ">=0.15.10",
+		"fabricloader": ">=0.16.7",
 		"minecraft": ">=1.21.2",
 		"fabric-api": ">=0.106.1"
 	}
