@@ -3,7 +3,7 @@ on: push
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     steps:
     - name: Checkout
@@ -15,8 +15,6 @@ jobs:
         java-version: '21'
     - name: Build with Gradle
       run: gradle build
-    - name: Detonate JARs
-      run: python ./ci/hissboom.py "./build/libs/*.jar"
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:

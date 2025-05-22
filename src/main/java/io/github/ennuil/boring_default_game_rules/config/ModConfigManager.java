@@ -10,18 +10,18 @@ import io.github.ennuil.boring_default_game_rules.mixin.BoundedIntRuleAccessor;
 import io.github.ennuil.boring_default_game_rules.mixin.DoubleRuleAccessor;
 import io.github.ennuil.boring_default_game_rules.mixin.EnumRuleAccessor;
 import io.github.ennuil.boring_default_game_rules.utils.LoggingUtils;
-import io.github.ennuil.boring_default_game_rules.wrench_wrapper.WrenchWrapper;
 import net.fabricmc.fabric.api.gamerule.v1.FabricGameRuleVisitor;
 import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 import net.fabricmc.fabric.impl.gamerule.rule.BoundedIntRule;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.feature_flags.FeatureFlagBitSet;
-import net.minecraft.feature_flags.FeatureFlags;
-import net.minecraft.text.Text;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Language;
-import net.minecraft.world.GameRules;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.level.GameRules;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -30,17 +30,28 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/*
+ * Boring Default Game Rules' GSON-based config system (with JSON Schema!)
+ */
 @SuppressWarnings("unchecked")
 public class ModConfigManager {
+	public static final String CONFIG_FILE_NAME = "config.json";
 	public static final String SCHEMA_FILE_NAME = "config.schema.json";
-	public static final Path SCHEMA_DIRECTORY_PATH = WrenchWrapper.getConfigDir().resolve("boring_default_game_rules");
-	public static final Path SCHEMA_PATH = SCHEMA_DIRECTORY_PATH.resolve(SCHEMA_FILE_NAME);
+	public static final Path CONFIG_DIRECTORY_PATH = FabricLoader.getInstance().getConfigDir().resolve("boring_default_game_rules");
+	public static final Path CONFIG_PATH = CONFIG_DIRECTORY_PATH.resolve(CONFIG_FILE_NAME);
+	public static final Path CONFIG_SCHEMA_PATH = CONFIG_DIRECTORY_PATH.resolve(SCHEMA_FILE_NAME);
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-	public static final ModConfig CONFIG = WrenchWrapper.create("boring_default_game_rules", "config", ModConfig.class);
+	public static ModConfig config = new ModConfig(
+		SCHEMA_FILE_NAME,
+		new HashMap<>(),
+		true
+	);
 
 	private static JsonObject defaultGameRulesProperties;
 	private static String newSchemaHash = "";
@@ -50,9 +61,24 @@ public class ModConfigManager {
 	private ModConfigManager() {}
 
 	public static void init(boolean client) {
+		try {
+			if (Files.notExists(CONFIG_DIRECTORY_PATH)) {
+				Files.createDirectory(CONFIG_DIRECTORY_PATH);
+			}
+
+			if (Files.exists(CONFIG_PATH)) {
+				var reader = Files.newBufferedReader(CONFIG_PATH, StandardCharsets.UTF_8);
+				config = GsonHelper.fromJson(GSON, reader, ModConfig.class, true);
+				reader.close();
+			} else {
+				updateConfigFile();
+			}
+		} catch (IOException e) {
+			LoggingUtils.LOGGER.error("Error on initializing config! %s", e.fillInStackTrace());
+		}
+
 		ModConfigManager.generateGameRulesHash();
 		ModConfigManager.prepareSchema(client);
-		CONFIG.save();
 
 		ModConfigManager.active = true;
 	}
@@ -65,10 +91,10 @@ public class ModConfigManager {
 		try {
 			boolean generateNewSchema = false;
 
-			if (CONFIG.generateJsonSchema.value()) {
-				if (SCHEMA_PATH.toFile().exists()) {
-					Reader schemaReader = Files.newBufferedReader(SCHEMA_PATH, StandardCharsets.UTF_8);
-					JsonObject schemaJson = JsonHelper.deserialize(GSON, schemaReader, JsonObject.class, true);
+			if (config.generate_json_schema()) {
+				if (CONFIG_SCHEMA_PATH.toFile().exists()) {
+					Reader schemaReader = Files.newBufferedReader(CONFIG_SCHEMA_PATH, StandardCharsets.UTF_8);
+					JsonObject schemaJson = GSON.fromJson(schemaReader, JsonObject.class);
 					String schemaHash = schemaJson.get("gameRulesHash").getAsString();
 					schemaReader.close();
 
@@ -82,9 +108,9 @@ public class ModConfigManager {
 			}
 
 			if (generateNewSchema) {
-				if (!Files.isDirectory(SCHEMA_DIRECTORY_PATH)) {
+				if (!Files.isDirectory(CONFIG_DIRECTORY_PATH)) {
 					LoggingUtils.LOGGER.info("A folder for saving the schema hasn't been found! Creating one...");
-					Files.createDirectory(SCHEMA_DIRECTORY_PATH);
+					Files.createDirectory(CONFIG_DIRECTORY_PATH);
 				}
 
 				LoggingUtils.LOGGER.info("Generating a new JSON schema...");
@@ -93,7 +119,7 @@ public class ModConfigManager {
 				} else {
 					generateGameRulePropertiesOnServer();
 				}
-				Writer schemaWriter = Files.newBufferedWriter(SCHEMA_PATH, StandardCharsets.UTF_8);
+				Writer schemaWriter = Files.newBufferedWriter(CONFIG_SCHEMA_PATH, StandardCharsets.UTF_8);
 				GSON.toJson(createSchemaObject(newSchemaHash), schemaWriter);
 				schemaWriter.close();
 			}
@@ -107,100 +133,112 @@ public class ModConfigManager {
 	}
 
 	public static void updateConfig(GameRules newGameRules) {
-		CONFIG.defaultGameRules.value().clear();
-		var defaultGameRules = new GameRules(FeatureFlags.MAIN_REGISTRY.setOf());
+		config.default_game_rules().clear();
+		var defaultGameRules = new GameRules(FeatureFlags.REGISTRY.allFlags());
 
 		if (newGameRules != null) {
-			defaultGameRules.accept(new FabricGameRuleVisitor() {
+			defaultGameRules.visitGameRuleTypes(new FabricGameRuleVisitor() {
+
+
 				@Override
-				public void visitBooleanGameRule(GameRules.Key<GameRules.BooleanGameRule> key, GameRules.Type<GameRules.BooleanGameRule> type) {
-					if (newGameRules.get(key).getValue() != defaultGameRules.get(key).getValue()) {
-						CONFIG.defaultGameRules.value().put(key.getName(), newGameRules.get(key).getValue());
+				public void visitBoolean(GameRules.Key<GameRules.BooleanValue> key, GameRules.Type<GameRules.BooleanValue> type) {
+					if (newGameRules.getBoolean(key) != defaultGameRules.getBoolean(key)) {
+						config.default_game_rules().put(key.getId(), newGameRules.getBoolean(key));
 					}
 				}
 
 				@Override
-				public void visitIntGameRule(GameRules.Key<GameRules.IntGameRule> key, GameRules.Type<GameRules.IntGameRule> type) {
-					if (newGameRules.get(key).getValue() != defaultGameRules.get(key).getValue()) {
-						CONFIG.defaultGameRules.value().put(key.getName(), newGameRules.get(key).getValue());
+				public void visitInteger(GameRules.Key<GameRules.IntegerValue> key, GameRules.Type<GameRules.IntegerValue> type) {
+					if (newGameRules.getInt(key) != defaultGameRules.getInt(key)) {
+						config.default_game_rules().put(key.getId(), newGameRules.getInt(key));
 					}
 				}
 
 				@Override
 				public void visitDouble(GameRules.Key<DoubleRule> key, GameRules.Type<DoubleRule> type) {
-					if (newGameRules.get(key).get() != defaultGameRules.get(key).get()) {
-						CONFIG.defaultGameRules.value().put(key.getName(), newGameRules.get(key).get());
+					if (newGameRules.getRule(key).get() != defaultGameRules.getRule(key).get()) {
+						config.default_game_rules().put(key.getId(), newGameRules.getRule(key).get());
 					}
 				}
 
 				@Override
 				public <E extends Enum<E>> void visitEnum(GameRules.Key<EnumRule<E>> key, GameRules.Type<EnumRule<E>> type) {
-					if (!newGameRules.get(key).get().equals(defaultGameRules.get(key).get())) {
-						CONFIG.defaultGameRules.value().put(key.getName(), newGameRules.get(key).get().name());
+					if (!newGameRules.getRule(key).get().equals(defaultGameRules.getRule(key).get())) {
+						config.default_game_rules().put(key.getId(), newGameRules.getRule(key).get().name());
 					}
 				}
 			});
 		}
 
-		CONFIG.save();
+		updateConfigFile();
+	}
+
+	private static void updateConfigFile() {
+		try {
+			var writer = GSON.newJsonWriter(Files.newBufferedWriter(CONFIG_PATH, StandardCharsets.UTF_8, StandardOpenOption.CREATE));
+			GSON.toJson(config, ModConfig.class, writer);
+			writer.close();
+		} catch (IOException e) {
+			LoggingUtils.LOGGER.error("Failed to update config file! %s", e.fillInStackTrace());
+		}
 	}
 
 	private static void generateGameRulePropertiesOnClient() {
-		var allGameRules = new GameRules(FeatureFlags.MAIN_REGISTRY.setOf());
+		var allGameRules = new GameRules(FeatureFlags.REGISTRY.allFlags());
 		defaultGameRulesProperties = new JsonObject();
 
-		allGameRules.accept(new FabricGameRuleVisitor() {
+		allGameRules.visitGameRuleTypes(new FabricGameRuleVisitor() {
 			@Override
-			public void visitBooleanGameRule(GameRules.Key<GameRules.BooleanGameRule> key, GameRules.Type<GameRules.BooleanGameRule> type) {
+			public void visitBoolean(GameRules.Key<GameRules.BooleanValue> key, GameRules.Type<GameRules.BooleanValue> type) {
 				addBooleanGameRule(
-					key.getName(),
-					I18n.translate(key.getTranslationKey()),
-					I18n.hasTranslation(key.getTranslationKey() + ".description")
-						? Text.translatable(key.getTranslationKey() + ".description").getString()
+					key.getId(),
+					I18n.get(key.getDescriptionId()),
+					I18n.exists(key.getDescriptionId() + ".description")
+						? Component.translatable(key.getDescriptionId() + ".description").getString()
 						: null,
-					type.createGameRule().getValue());
+					type.createRule().get());
 			}
 
 			@Override
-			public void visitIntGameRule(GameRules.Key<GameRules.IntGameRule> key, GameRules.Type<GameRules.IntGameRule> type) {
-				var gameRule = type.createGameRule();
+			public void visitInteger(GameRules.Key<GameRules.IntegerValue> key, GameRules.Type<GameRules.IntegerValue> type) {
+				var gameRule = type.createRule();
 				if (gameRule instanceof BoundedIntRule boundedType) {
 					int minimum = ((BoundedIntRuleAccessor) (Object) boundedType).getMinimumValue();
 					int maximum = ((BoundedIntRuleAccessor) (Object) boundedType).getMaximumValue();
 					addIntegerGameRule(
-						key.getName(),
-						I18n.translate(key.getTranslationKey()),
-						I18n.hasTranslation(key.getTranslationKey() + ".description")
-							? Text.translatable(key.getTranslationKey() + ".description").getString()
+						key.getId(),
+						I18n.get(key.getDescriptionId()),
+						I18n.exists(key.getDescriptionId() + ".description")
+							? Component.translatable(key.getDescriptionId() + ".description").getString()
 							: null,
-						joinFeatureFlagsOnClient(type.method_61728()),
-						boundedType.getValue(),
+						joinFeatureFlagsOnClient(type.requiredFeatures()),
+						boundedType.get(),
 						minimum,
 						maximum);
 				} else {
 					addIntegerGameRule(
-						key.getName(),
-						I18n.translate(key.getTranslationKey()),
-						I18n.hasTranslation(key.getTranslationKey() + ".description")
-							? Text.translatable(key.getTranslationKey() + ".description").getString()
+						key.getId(),
+						I18n.get(key.getDescriptionId()),
+						I18n.exists(key.getDescriptionId() + ".description")
+							? Component.translatable(key.getDescriptionId() + ".description").getString()
 							: null,
-						joinFeatureFlagsOnClient(type.method_61728()),
-						type.createGameRule().getValue(),
-						type.argumentType.get() instanceof IntegerArgumentType intArgType ? intArgType.getMinimum() : null,
-						type.argumentType.get() instanceof IntegerArgumentType intArgType ? intArgType.getMaximum() : null);
+						joinFeatureFlagsOnClient(type.requiredFeatures()),
+						type.createRule().get(),
+						type.argument.get() instanceof IntegerArgumentType intArgType ? intArgType.getMinimum() : null,
+						type.argument.get() instanceof IntegerArgumentType intArgType ? intArgType.getMaximum() : null);
 				}
 			}
 
 			@Override
 			public void visitDouble(GameRules.Key<DoubleRule> key, GameRules.Type<DoubleRule> type) {
-				var doubleRule = type.createGameRule();
+				var doubleRule = type.createRule();
 				double maximum = ((DoubleRuleAccessor) (Object) doubleRule).getMaximumValue();
 				double minimum = ((DoubleRuleAccessor) (Object) doubleRule).getMinimumValue();
 				addDoubleGameRule(
-					key.getName(),
-					I18n.translate(key.getTranslationKey()),
-					I18n.hasTranslation(key.getTranslationKey() + ".description")
-						? Text.translatable(key.getTranslationKey() + ".description").getString()
+					key.getId(),
+					I18n.get(key.getDescriptionId()),
+					I18n.exists(key.getDescriptionId() + ".description")
+						? Component.translatable(key.getDescriptionId() + ".description").getString()
 						: null,
 					doubleRule.get(),
 					minimum,
@@ -210,12 +248,12 @@ public class ModConfigManager {
 
 			@Override
 			public <E extends Enum<E>> void visitEnum(GameRules.Key<EnumRule<E>> key, GameRules.Type<EnumRule<E>> type) {
-				var enumRule = type.createGameRule();
+				var enumRule = type.createRule();
 				addEnumGameRule(
-					key.getName(),
-					I18n.translate(key.getTranslationKey()),
-					I18n.hasTranslation(key.getTranslationKey() + ".description")
-						? Text.translatable(key.getTranslationKey() + ".description").getString()
+					key.getId(),
+					I18n.get(key.getDescriptionId()),
+					I18n.exists(key.getDescriptionId() + ".description")
+						? Component.translatable(key.getDescriptionId() + ".description").getString()
 						: null,
 					enumRule.get(),
 					((EnumRuleAccessor<E>) (Object) enumRule).getSupportedValues());
@@ -224,55 +262,55 @@ public class ModConfigManager {
 	}
 
 	private static void generateGameRulePropertiesOnServer() {
-		var allGameRules = new GameRules(FeatureFlags.MAIN_REGISTRY.setOf());
+		var allGameRules = new GameRules(FeatureFlags.REGISTRY.allFlags());
 		defaultGameRulesProperties = new JsonObject();
 
-		allGameRules.accept(new FabricGameRuleVisitor() {
+		allGameRules.visitGameRuleTypes(new FabricGameRuleVisitor() {
 			final Language language = Language.getInstance();
 
 			@Override
-			public void visitBooleanGameRule(GameRules.Key<GameRules.BooleanGameRule> key, GameRules.Type<GameRules.BooleanGameRule> type) {
+			public void visitBoolean(GameRules.Key<GameRules.BooleanValue> key, GameRules.Type<GameRules.BooleanValue> type) {
 				addBooleanGameRule(
-					key.getName(),
-					language.get(key.getTranslationKey()),
-					language.get(key.getTranslationKey() + ".description", null),
-					type.createGameRule().getValue());
+					key.getId(),
+					language.getOrDefault(key.getDescriptionId()),
+					language.getOrDefault(key.getDescriptionId() + ".description", null),
+					type.createRule().get());
 			}
 
 			@Override
-			public void visitIntGameRule(GameRules.Key<GameRules.IntGameRule> key, GameRules.Type<GameRules.IntGameRule> type) {
-				if (type.createGameRule() instanceof BoundedIntRule boundedType) {
+			public void visitInteger(GameRules.Key<GameRules.IntegerValue> key, GameRules.Type<GameRules.IntegerValue> type) {
+				if (type.createRule() instanceof BoundedIntRule boundedType) {
 					int minimum = ((BoundedIntRuleAccessor) (Object) boundedType).getMinimumValue();
 					int maximum = ((BoundedIntRuleAccessor) (Object) boundedType).getMaximumValue();
 					addIntegerGameRule(
-						key.getName(),
-						language.get(key.getTranslationKey()),
-						language.get(key.getTranslationKey() + ".description", null),
-						joinFeatureFlagsOnServer(type.method_61728(), language),
-						boundedType.getValue(),
+						key.getId(),
+						language.getOrDefault(key.getDescriptionId()),
+						language.getOrDefault(key.getDescriptionId() + ".description", null),
+						joinFeatureFlagsOnServer(type.requiredFeatures(), language),
+						boundedType.get(),
 						minimum,
 						maximum);
 				} else {
 					addIntegerGameRule(
-						key.getName(),
-						language.get(key.getTranslationKey()),
-						language.get(key.getTranslationKey() + ".description", null),
-						joinFeatureFlagsOnServer(type.method_61728(), language),
-						type.createGameRule().getValue(),
-						type.argumentType.get() instanceof IntegerArgumentType intArgType ? intArgType.getMinimum() : null,
-						type.argumentType.get() instanceof IntegerArgumentType intArgType ? intArgType.getMaximum() : null);
+						key.getId(),
+						language.getOrDefault(key.getDescriptionId()),
+						language.getOrDefault(key.getDescriptionId() + ".description", null),
+						joinFeatureFlagsOnServer(type.requiredFeatures(), language),
+						type.createRule().get(),
+						type.argument.get() instanceof IntegerArgumentType intArgType ? intArgType.getMinimum() : null,
+						type.argument.get() instanceof IntegerArgumentType intArgType ? intArgType.getMaximum() : null);
 				}
 			}
 
 			@Override
 			public void visitDouble(GameRules.Key<DoubleRule> key, GameRules.Type<DoubleRule> type) {
-				DoubleRule doubleRule = type.createGameRule();
+				DoubleRule doubleRule = type.createRule();
 				double maximum = ((DoubleRuleAccessor) (Object) doubleRule).getMaximumValue();
 				double minimum = ((DoubleRuleAccessor) (Object) doubleRule).getMinimumValue();
 				addDoubleGameRule(
-					key.getName(),
-					language.get(key.getTranslationKey()),
-					language.get(key.getTranslationKey() + ".description", null),
+					key.getId(),
+					language.getOrDefault(key.getDescriptionId()),
+					language.getOrDefault(key.getDescriptionId() + ".description", null),
 					doubleRule.get(),
 					minimum,
 					maximum);
@@ -280,23 +318,23 @@ public class ModConfigManager {
 
 			@Override
 			public <E extends Enum<E>> void visitEnum(GameRules.Key<EnumRule<E>> key, GameRules.Type<EnumRule<E>> type) {
-				EnumRule<E> enumRule = type.createGameRule();
+				EnumRule<E> enumRule = type.createRule();
 				addEnumGameRule(
-					key.getName(),
-					language.get(key.getTranslationKey()),
-					language.get(key.getTranslationKey() + ".description", null),
+					key.getId(),
+					language.getOrDefault(key.getDescriptionId()),
+					language.getOrDefault(key.getDescriptionId() + ".description", null),
 					enumRule.get(),
 					((EnumRuleAccessor<E>) (Object) enumRule).getSupportedValues());
 			}
 		});
 	}
 
-	private static String joinFeatureFlagsOnClient(FeatureFlagBitSet set) {
-		return FeatureFlags.MAIN_REGISTRY.getFlagIds(set).stream().map(id -> "dataPack." + id.getPath() + ".name").map(I18n::translate).collect(Collectors.joining(", "));
+	private static String joinFeatureFlagsOnClient(FeatureFlagSet set) {
+		return FeatureFlags.REGISTRY.toNames(set).stream().map(id -> "dataPack." + id.getPath() + ".name").map(I18n::get).collect(Collectors.joining(", "));
 	}
 
-	private static String joinFeatureFlagsOnServer(FeatureFlagBitSet set, Language language) {
-		return FeatureFlags.MAIN_REGISTRY.getFlagIds(set).stream().map(id -> "dataPack." + id.getPath() + ".name").map(language::get).collect(Collectors.joining(", "));
+	private static String joinFeatureFlagsOnServer(FeatureFlagSet set, Language language) {
+		return FeatureFlags.REGISTRY.toNames(set).stream().map(id -> "dataPack." + id.getPath() + ".name").map(language::getOrDefault).collect(Collectors.joining(", "));
 	}
 
 	private static JsonObject createSchemaObject(String hashCode) {
@@ -425,7 +463,7 @@ public class ModConfigManager {
 	}
 
 	public static void generateGameRulesHash() {
-		GameRules.GAME_RULE_TYPES.keySet().forEach(key -> newSchemaHash += key.getName());
+		GameRules.GAME_RULE_TYPES.keySet().forEach(key -> newSchemaHash += key.getId());
 		newSchemaHash = Hashing.sha256().hashString(newSchemaHash, StandardCharsets.UTF_8).toString();
 	}
 }

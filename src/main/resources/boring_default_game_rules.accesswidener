@@ -1,11 +1,7 @@
 accessWidener v2 named
 
-accessible field net/minecraft/client/gui/screen/world/EditGameRulesScreen rulesList Lnet/minecraft/client/gui/screen/world/EditGameRulesScreen$GameRuleElementListWidget;
-accessible field net/minecraft/client/gui/screen/world/EditGameRulesScreen gameRules Lnet/minecraft/world/GameRules;
-accessible field net/minecraft/client/gui/screen/Screen title Lnet/minecraft/text/Text;
-accessible field net/minecraft/world/GameRules GAME_RULE_TYPES Ljava/util/Map;
-accessible field net/minecraft/world/GameRules$Type argumentType Ljava/util/function/Supplier;
-accessible method net/minecraft/world/GameRules$AbstractGameRule changed (Lnet/minecraft/server/MinecraftServer;)V
-
-mutable field net/minecraft/client/gui/screen/world/EditGameRulesScreen gameRules Lnet/minecraft/world/GameRules;
-mutable field net/minecraft/client/gui/screen/Screen title Lnet/minecraft/text/Text;
+accessible field net/minecraft/client/gui/screens/worldselection/EditGameRulesScreen ruleList Lnet/minecraft/client/gui/screens/worldselection/EditGameRulesScreen$RuleList;
+accessible field net/minecraft/client/gui/screens/worldselection/EditGameRulesScreen gameRules Lnet/minecraft/world/level/GameRules;
+accessible field net/minecraft/world/level/GameRules GAME_RULE_TYPES Ljava/util/Map;
+accessible field net/minecraft/world/level/GameRules$Type argument Ljava/util/function/Supplier;
+accessible method net/minecraft/world/level/GameRules$Value onChanged (Lnet/minecraft/server/MinecraftServer;)V

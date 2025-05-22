@@ -3,16 +3,16 @@ package io.github.ennuil.boring_default_game_rules.mixin.client;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 import io.github.ennuil.boring_default_game_rules.screen.EditDefaultGameRulesScreen;
-import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.button.ButtonWidget;
-import net.minecraft.feature_flags.FeatureFlags;
-import net.minecraft.text.Text;
-import net.minecraft.world.GameRules;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.level.GameRules;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,63 +28,63 @@ import java.util.function.Consumer;
 
 @Mixin(EditGameRulesScreen.class)
 public abstract class EditGameRulesScreenMixin extends Screen {
-	private EditGameRulesScreenMixin(Text text) {
-		super(text);
+	private EditGameRulesScreenMixin(Component component) {
+		super(component);
 	}
 
 	@Shadow
-	public EditGameRulesScreen.GameRuleElementListWidget rulesList;
+	public EditGameRulesScreen.RuleList ruleList;
 
 	@Shadow
 	@Final
-	private Consumer<Optional<GameRules>> ruleSaver;
+	private Consumer<Optional<GameRules>> exitCallback;
 
 	@Inject(method = "init()V", at = @At("TAIL"))
 	private void addEditDefaultsButton(CallbackInfo ci) {
 		// Don't let the button appear on screens that extends this screen
 		if (((EditGameRulesScreen) (Object) this).getClass() == EditGameRulesScreen.class) {
-			this.rulesList.children().add(new EditDefaultsButtonWidget());
+			this.ruleList.children().add(new EditDefaultsButtonWidget());
 		}
 	}
 
-	@ModifyExpressionValue(method = "init()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/world/EditGameRulesScreen;TITLE:Lnet/minecraft/text/Text;"))
-	private Text modifyTitle(Text original) {
+	@ModifyExpressionValue(method = "init()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screens/worldselection/EditGameRulesScreen;TITLE:Lnet/minecraft/network/chat/Component;"))
+	private Component modifyTitle(Component original) {
 		return this.title;
 	}
 
 	@SuppressWarnings("all")
 	@Unique
-	public class EditDefaultsButtonWidget extends EditGameRulesScreen.AbstractEntry {
-		private final ButtonWidget editButton;
-		private final List<ClickableWidget> widgets = new ArrayList<>();
+	public class EditDefaultsButtonWidget extends EditGameRulesScreen.RuleEntry {
+		private final Button editButton;
+		private final List<AbstractButton> widgets = new ArrayList<>();
 
 		public EditDefaultsButtonWidget() {
 			super(List.of(
-				Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.1").asOrderedText(),
-				Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.2").asOrderedText()
+				Component.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.1").getVisualOrderText(),
+				Component.translatable("boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.2").getVisualOrderText()
 			));
-			this.editButton = ButtonWidget.builder(Text.translatable("boring_default_game_rules.game_rules.edit_default_game_rules"), button -> {
-				EditGameRulesScreenMixin.this.client.setScreen(new EditDefaultGameRulesScreen(new GameRules(FeatureFlags.MAIN_REGISTRY.setOf()), gameRulesWrapper -> {
+			this.editButton = Button.builder(Component.translatable("boring_default_game_rules.game_rules.edit_default_game_rules"), button -> {
+				EditGameRulesScreenMixin.this.minecraft.setScreen(new EditDefaultGameRulesScreen(new GameRules(FeatureFlags.REGISTRY.allFlags()), gameRulesWrapper -> {
 					gameRulesWrapper.ifPresentOrElse(gameRules -> {
 						ModConfigManager.updateConfig(gameRules);
-						EditGameRulesScreenMixin.this.ruleSaver.accept(Optional.of(gameRules));
-						EditGameRulesScreenMixin.this.client.setScreen(new EditGameRulesScreen(gameRules, EditGameRulesScreenMixin.this.ruleSaver));
-					}, () -> EditGameRulesScreenMixin.this.client.setScreen(EditGameRulesScreenMixin.this));
+						EditGameRulesScreenMixin.this.exitCallback.accept(Optional.of(gameRules));
+						EditGameRulesScreenMixin.this.minecraft.setScreen(new EditGameRulesScreen(gameRules, EditGameRulesScreenMixin.this.exitCallback));
+					}, () -> EditGameRulesScreenMixin.this.minecraft.setScreen(EditGameRulesScreenMixin.this));
 				}));
 			})
-				.position(10, 5)
+				.pos(10, 5)
 				.size(150, 20)
 				.build();
 			this.widgets.add(this.editButton);
 		}
 
 		@Override
-		public List<? extends Element> children() {
+		public List<? extends GuiEventListener> children() {
 			return this.widgets;
 		}
 
 		@Override
-		public List<? extends Selectable> selectableChildren() {
+		public List<? extends NarratableEntry> narratables() {
 			return this.widgets;
 		}
 

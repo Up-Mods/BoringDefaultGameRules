@@ -1,43 +1,70 @@
 package io.github.ennuil.boring_default_game_rules.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
-import net.minecraft.world.GameRules;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.world.level.GameRules;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
 @Mixin(GameRules.class)
 public class GameRulesMixin {
-	@Shadow
-	@Final
-	private Map<GameRules.Key<?>, GameRules.AbstractGameRule<?>> gameRules;
-
-	@Inject(method = "<init>(Lnet/minecraft/feature_flags/FeatureFlagBitSet;)V", at = @At("TAIL"))
-	private void overrideDefaults(CallbackInfo info) {
-		if (!ModConfigManager.isActive()) return;
-		if (ModConfigManager.CONFIG.defaultGameRules.value().isEmpty()) return;
-
-		this.gameRules.forEach((key, rule) -> ModConfigManager.CONFIG.defaultGameRules.value().forEach((defaultKey, defaultValue) -> {
-			if (key.getName().equals(defaultKey)) {
-				if (rule instanceof GameRules.IntGameRule intRule) {
-					intRule.setValue(((Number) defaultValue).intValue(), null);
-				} else if (rule instanceof GameRules.BooleanGameRule booleanRule) {
-					booleanRule.setValue((Boolean) defaultValue, null);
-				} else if (rule instanceof DoubleRule doubleRule) {
-					((DoubleRuleAccessor) (Object) doubleRule).setValue(((Number) defaultValue).doubleValue());
-					doubleRule.changed(null);
-				} else if (rule instanceof EnumRule enumRule) {
-					enumRule.set(Enum.valueOf(enumRule.getEnumClass(), (String) defaultValue), null);
+	@ModifyReturnValue(method = "method_61726", at = @At("RETURN"))
+	private static GameRules.Value<?> modifyGameRules(GameRules.Value<?> original, @Local(argsOnly = true) Map.Entry<GameRules.Key<?>, GameRules.Value<?>> entry) {
+		if (ModConfigManager.isActive() && !ModConfigManager.config.default_game_rules().isEmpty()) {
+			var id = entry.getKey().getId();
+			if (ModConfigManager.config.default_game_rules().containsKey(id)) {
+				var value = ModConfigManager.config.default_game_rules().get(id);
+				if (original instanceof GameRules.IntegerValue intValue) {
+					intValue.set(((Number) value).intValue(), null);
+				} else if (original instanceof GameRules.BooleanValue booleanValue) {
+					booleanValue.set((Boolean) value, null);
+				} else if (original instanceof DoubleRule doubleValue) {
+					((DoubleRuleAccessor) (Object) doubleValue).setValue(((Number) value).doubleValue());
+					doubleValue.onChanged(null);
+				} else if (original instanceof EnumRule enumValue) {
+					enumValue.set(Enum.valueOf(enumValue.getEnumClass(), (String) value), null);
 				}
 			}
-		}));
+		}
+
+
+		return original;
+	}
+
+	@WrapOperation(
+		method = "method_27324",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/world/level/GameRules$Type;createRule()Lnet/minecraft/world/level/GameRules$Value;"
+		)
+	)
+	private GameRules.Value<?> modifyConditionalGameRules(GameRules.Type<?> instance, Operation<GameRules.Value<?>> original, @Local(argsOnly = true) Map.Entry<GameRules.Key<?>, GameRules.Value<?>> entry) {
+		var originalValue = original.call(instance);
+		if (ModConfigManager.isActive() && !ModConfigManager.config.default_game_rules().isEmpty()) {
+			var id = entry.getKey().getId();
+			if (ModConfigManager.config.default_game_rules().containsKey(id)) {
+				var value = ModConfigManager.config.default_game_rules().get(id);
+				if (originalValue instanceof GameRules.IntegerValue intValue) {
+					intValue.set(((Number) value).intValue(), null);
+				} else if (originalValue instanceof GameRules.BooleanValue booleanValue) {
+					booleanValue.set((Boolean) value, null);
+				} else if (originalValue instanceof DoubleRule doubleValue) {
+					((DoubleRuleAccessor) (Object) doubleValue).setValue(((Number) value).doubleValue());
+					doubleValue.onChanged(null);
+				} else if (originalValue instanceof EnumRule enumValue) {
+					enumValue.set(Enum.valueOf(enumValue.getEnumClass(), (String) value), null);
+				}
+			}
+		}
+
+		return originalValue;
 	}
 }
