@@ -1,0 +1,8 @@
+{
+	"boring_default_game_rules.game_rules.edit_default_game_rules": "Editar Predeterminados",
+	"boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.1": "Permite editar las reglas del juego predeterminadas.",
+	"boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.2": "Aviso: Esto descartará tus ajustes actuales!",
+	"boring_default_game_rules.edit_default_game_rules.title": "Editar Reglas de Juego Predeterminadas",
+	"boring_default_game_rules.edit_default_game_rules.reset_defaults": "Restablecer Predeterminados",
+	"boring_default_game_rules.edit_default_game_rules.reset_defaults.tooltip": "Restablece los ajustes modificados a los predeterminados por el juego."
+}
