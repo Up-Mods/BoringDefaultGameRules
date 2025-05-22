@@ -74,7 +74,7 @@ public class ModConfigManager {
 				updateConfigFile();
 			}
 		} catch (IOException e) {
-			LoggingUtils.LOGGER.error("Error on initializing config! %s", e.fillInStackTrace());
+			LoggingUtils.LOGGER.error("Error on initializing config!", e.fillInStackTrace());
 		}
 
 		ModConfigManager.generateGameRulesHash();
@@ -119,7 +119,7 @@ public class ModConfigManager {
 				} else {
 					generateGameRulePropertiesOnServer();
 				}
-				Writer schemaWriter = Files.newBufferedWriter(CONFIG_SCHEMA_PATH, StandardCharsets.UTF_8);
+				Writer schemaWriter = Files.newBufferedWriter(CONFIG_SCHEMA_PATH, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				GSON.toJson(createSchemaObject(newSchemaHash), schemaWriter);
 				schemaWriter.close();
 			}
@@ -177,7 +177,7 @@ public class ModConfigManager {
 			GSON.toJson(config, ModConfig.class, writer);
 			writer.close();
 		} catch (IOException e) {
-			LoggingUtils.LOGGER.error("Failed to update config file! %s", e.fillInStackTrace());
+			LoggingUtils.LOGGER.error("Failed to update config file!", e.fillInStackTrace());
 		}
 	}
 

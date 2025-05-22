@@ -1,7 +1,6 @@
 package io.github.ennuil.boring_default_game_rules.screen;
 
 import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
-import io.github.ennuil.boring_default_game_rules.mixin.client.accessors.EditGameRulesScreenAccessor;
 import io.github.ennuil.boring_default_game_rules.mixin.client.accessors.ScreenAccessor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -19,8 +18,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
-	public EditDefaultGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> consumer) {
-		super(gameRules, consumer);
+	public EditDefaultGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> exitCallback) {
+		super(gameRules, exitCallback);
 		// You can't stop destiny, `final` keyword!
 		((ScreenAccessor) this).setTitle(Component.translatable("boring_default_game_rules.edit_default_game_rules.title"));
 	}
@@ -29,7 +28,7 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 	protected void init() {
 		super.init();
 		var button = new ResetButtonWidget();
-		((EditGameRulesScreenAccessor) (EditDefaultGameRulesScreen.this)).getRuleList().children().add(button);
+		EditDefaultGameRulesScreen.this.ruleList.children().add(button);
 	}
 
 	public class ResetButtonWidget extends EditGameRulesScreen.RuleEntry {

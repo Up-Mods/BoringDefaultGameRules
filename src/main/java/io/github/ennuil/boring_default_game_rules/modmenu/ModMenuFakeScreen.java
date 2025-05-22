@@ -19,9 +19,9 @@ public class ModMenuFakeScreen extends Screen {
     @Override
     protected void init() {
 		ModConfigManager.prepareSchema(true);
-        this.minecraft.setScreen(new EditDefaultGameRulesScreen(new GameRules(FeatureFlags.REGISTRY.allFlags()), gameRulesWrapper -> {
+        this.minecraft.setScreen(new EditDefaultGameRulesScreen(new GameRules(FeatureFlags.REGISTRY.allFlags()), exitCallback -> {
 			this.minecraft.setScreen(this.parent);
-			gameRulesWrapper.ifPresent(ModConfigManager::updateConfig);
+			exitCallback.ifPresent(ModConfigManager::updateConfig);
 		}));
     }
 }

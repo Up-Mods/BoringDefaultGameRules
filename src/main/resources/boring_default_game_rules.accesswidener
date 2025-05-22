@@ -1,7 +1,6 @@
 accessWidener v2 named
 
 accessible field net/minecraft/client/gui/screens/worldselection/EditGameRulesScreen ruleList Lnet/minecraft/client/gui/screens/worldselection/EditGameRulesScreen$RuleList;
-accessible field net/minecraft/client/gui/screens/worldselection/EditGameRulesScreen gameRules Lnet/minecraft/world/level/GameRules;
 accessible field net/minecraft/world/level/GameRules GAME_RULE_TYPES Ljava/util/Map;
 accessible field net/minecraft/world/level/GameRules$Type argument Ljava/util/function/Supplier;
 accessible method net/minecraft/world/level/GameRules$Value onChanged (Lnet/minecraft/server/MinecraftServer;)V

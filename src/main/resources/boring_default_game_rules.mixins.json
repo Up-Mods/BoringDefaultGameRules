@@ -4,7 +4,6 @@
 	"compatibilityLevel": "JAVA_17",
 	"client": [
 		"client.EditGameRulesScreenMixin",
-		"client.accessors.EditGameRulesScreenAccessor",
 		"client.accessors.ScreenAccessor"
 	],
 	"mixins": [
