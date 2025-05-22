@@ -3,7 +3,7 @@ on: push
 
 jobs:
   build:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout
@@ -19,4 +19,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Build Artifacts
-        path: build/libs/*.jar
+        path: build/libs
