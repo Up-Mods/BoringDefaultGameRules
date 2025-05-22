@@ -138,8 +138,6 @@ public class ModConfigManager {
 
 		if (newGameRules != null) {
 			defaultGameRules.visitGameRuleTypes(new FabricGameRuleVisitor() {
-
-
 				@Override
 				public void visitBoolean(GameRules.Key<GameRules.BooleanValue> key, GameRules.Type<GameRules.BooleanValue> type) {
 					if (newGameRules.getBoolean(key) != defaultGameRules.getBoolean(key)) {
@@ -175,7 +173,7 @@ public class ModConfigManager {
 
 	private static void updateConfigFile() {
 		try {
-			var writer = GSON.newJsonWriter(Files.newBufferedWriter(CONFIG_PATH, StandardCharsets.UTF_8, StandardOpenOption.CREATE));
+			var writer = GSON.newJsonWriter(Files.newBufferedWriter(CONFIG_PATH, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING));
 			GSON.toJson(config, ModConfig.class, writer);
 			writer.close();
 		} catch (IOException e) {
