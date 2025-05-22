@@ -1,14 +1,27 @@
 plugins {
 	id("maven-publish")
-    alias(libs.plugins.fabric.loom)
+	alias(libs.plugins.fabric.loom)
 }
 
 version = "2.0.0+1.21.5"
 group = "io.github.ennuil"
 
 repositories {
-    maven("https://maven.parchmentmc.org")
+	maven("https://maven.parchmentmc.org")
 	maven("https://maven.terraformersmc.com/releases/")
+}
+
+dependencies {
+	minecraft(libs.minecraft)
+
+	mappings(loom.layered {
+		officialMojangMappings()
+		parchment(libs.parchment)
+	})
+	modImplementation(libs.fabric.loader)
+
+	modImplementation(libs.fabric.api)
+	modImplementation(libs.mod.menu)
 }
 
 loom {
@@ -25,32 +38,17 @@ loom {
 	accessWidenerPath = file("src/main/resources/boring_default_game_rules.accesswidener")
 }
 
-// All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
-// See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
-dependencies {
-	minecraft(libs.minecraft)
-	mappings(loom.layered {
-		officialMojangMappings()
-		parchment(libs.parchment)
-	})
-	modImplementation(libs.fabric.loader)
-
-	modImplementation(libs.fabric.api)
-	modImplementation(libs.mod.menu)
-}
-
 tasks.named<ProcessResources>("processResources").configure {
-    val version = project.version
-    inputs.property("version", version)
+	val version = project.version
+	inputs.property("version", version)
 
-    filesMatching("fabric.mod.json") {
-        expand("version" to version)
-    }
+	filesMatching("fabric.mod.json") {
+		expand("version" to version)
+	}
 }
 
 tasks.withType<JavaCompile> {
-    // Minecraft 1.20.6 (24w14a) upwards uses Java 21.
-    options.release = 21
+	options.release = 21
 }
 
 java {
@@ -63,11 +61,30 @@ java {
 	// withJavadocJar()
 }
 
+// If you plan to use a different file for the license, don't forget to change the file name here!
+tasks.named<Jar>("jar").configure {
+	val name = project.name
+	inputs.files("LICENSE.md")
+	inputs.property("name", name)
+
+	from("LICENSE.md") {
+		rename { "LICENSE_${name}.md" }
+	}
+}
+
 // Configure the maven publication
 publishing {
-    publications {
-        register<MavenPublication>("mavenJava") {
-            from(components["java"])
-        }
-    }
+	publications {
+		register<MavenPublication>("mavenJava") {
+			from(components["java"])
+		}
+	}
+
+	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+	repositories {
+		// Add repositories to publish to here.
+		// Notice: This block does NOT have the same function as the block in the top level.
+		// The repositories here will be used for publishing your artifact, not for
+		// retrieving dependencies.
+	}
 }
