@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.ennuil.boring_default_game_rules.mixin.BoundedIntRuleAccessor;
 import io.github.ennuil.boring_default_game_rules.mixin.DoubleRuleAccessor;
@@ -18,7 +19,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.GameRules;
@@ -45,7 +45,7 @@ public class ModConfigManager {
 	public static final Path CONFIG_DIRECTORY_PATH = FabricLoader.getInstance().getConfigDir().resolve("boring_default_game_rules");
 	public static final Path CONFIG_PATH = CONFIG_DIRECTORY_PATH.resolve(CONFIG_FILE_NAME);
 	public static final Path CONFIG_SCHEMA_PATH = CONFIG_DIRECTORY_PATH.resolve(SCHEMA_FILE_NAME);
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+	private static final Gson GSON = new GsonBuilder().setLenient().setPrettyPrinting().create();
 
 	public static ModConfig config = new ModConfig(
 		SCHEMA_FILE_NAME,
@@ -67,8 +67,8 @@ public class ModConfigManager {
 			}
 
 			if (Files.exists(CONFIG_PATH)) {
-				var reader = Files.newBufferedReader(CONFIG_PATH, StandardCharsets.UTF_8);
-				config = GsonHelper.fromJson(GSON, reader, ModConfig.class, true);
+				var reader = new JsonReader(Files.newBufferedReader(CONFIG_PATH, StandardCharsets.UTF_8));
+				config = GSON.fromJson(reader, ModConfig.class);
 				reader.close();
 			} else {
 				updateConfigFile();
