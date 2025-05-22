@@ -8,9 +8,9 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.GameRules;
 
 import java.util.ArrayList;
@@ -40,13 +40,18 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 			super(List.of(Component.translatable("boring_default_game_rules.edit_default_game_rules.reset_defaults.tooltip").getVisualOrderText()));
 			this.resetButton = Button.builder(
 				Component.translatable("boring_default_game_rules.edit_default_game_rules.reset_defaults"),
-				button -> {
-					double scrollAmount = ((EditGameRulesScreenAccessor) (EditDefaultGameRulesScreen.this)).getRuleList().scrollAmount();
-					ModConfigManager.resetDefaults();
-					((EditGameRulesScreenAccessor) (EditDefaultGameRulesScreen.this)).setGameRules(new GameRules(FeatureFlags.REGISTRY.allFlags()));
-					EditDefaultGameRulesScreen.this.repositionElements();
-					((EditGameRulesScreenAccessor) (EditDefaultGameRulesScreen.this)).getRuleList().setScrollAmount(scrollAmount);
-				}
+				button -> EditDefaultGameRulesScreen.this.minecraft.setScreen(new ConfirmScreen(
+					confirmed -> {
+						if (confirmed) {
+							ModConfigManager.resetDefaults();
+							EditDefaultGameRulesScreen.this.onClose();
+						} else {
+							EditDefaultGameRulesScreen.this.minecraft.setScreen(EditDefaultGameRulesScreen.this);
+						}
+					},
+					Component.translatable("boring_default_game_rules.reset_default_game_rules.title"),
+					Component.translatable("boring_default_game_rules.reset_default_game_rules.question")
+				))
 			).pos(10, 5)
 			.size(150, 20)
 			.build();

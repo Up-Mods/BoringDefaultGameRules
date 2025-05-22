@@ -4,5 +4,7 @@
 	"boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.2": "Atenção: Isso irá descartar suas definições atuais!",
 	"boring_default_game_rules.edit_default_game_rules.title": "Editar padrões das regras de jogo",
 	"boring_default_game_rules.edit_default_game_rules.reset_defaults": "Redefinir padrões",
-	"boring_default_game_rules.edit_default_game_rules.reset_defaults.tooltip": "Redefine os padrões modificados para os seus valores originais."
+	"boring_default_game_rules.edit_default_game_rules.reset_defaults.tooltip": "Redefine os padrões modificados para os seus valores originais.",
+	"boring_default_game_rules.reset_default_game_rules.title": "Redefinir padrões das regras de jogo",
+	"boring_default_game_rules.reset_default_game_rules.question": "Deseja mesmo redefinir os padrões das regras de jogo? Todas as alterações serão perdidas."
 }

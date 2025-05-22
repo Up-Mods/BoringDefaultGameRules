@@ -4,5 +4,7 @@
 	"boring_default_game_rules.game_rules.edit_default_game_rules.tooltip.2": "Warning: This will discard your current settings!",
 	"boring_default_game_rules.edit_default_game_rules.title": "Edit Default Game Rules",
 	"boring_default_game_rules.edit_default_game_rules.reset_defaults": "Reset Defaults",
-	"boring_default_game_rules.edit_default_game_rules.reset_defaults.tooltip": "Resets the modified defaults to their original ones."
+	"boring_default_game_rules.edit_default_game_rules.reset_defaults.tooltip": "Resets the modified defaults to their original ones.",
+	"boring_default_game_rules.reset_default_game_rules.title": "Reset Default Game Rules",
+	"boring_default_game_rules.reset_default_game_rules.question": "Are you sure you want to reset the default game rules? You will lose all changes done to them."
 }
