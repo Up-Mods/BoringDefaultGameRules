@@ -67,14 +67,14 @@ public class ModConfigManager {
 			}
 
 			if (Files.exists(CONFIG_PATH)) {
-				var reader = new JsonReader(Files.newBufferedReader(CONFIG_PATH, StandardCharsets.UTF_8));
-				config = GSON.fromJson(reader, ModConfig.class);
-				reader.close();
+				try (var reader = new JsonReader(Files.newBufferedReader(CONFIG_PATH, StandardCharsets.UTF_8))) {
+					config = GSON.fromJson(reader, ModConfig.class);
+				}
 			} else {
 				updateConfigFile();
 			}
 		} catch (IOException e) {
-			LoggingUtils.LOGGER.error("Error on initializing config!", e.fillInStackTrace());
+			LoggingUtils.LOGGER.error("Error on initializing config!", e);
 		}
 
 		ModConfigManager.generateGameRulesHash();
@@ -93,14 +93,14 @@ public class ModConfigManager {
 
 			if (config.generate_json_schema()) {
 				if (CONFIG_SCHEMA_PATH.toFile().exists()) {
-					Reader schemaReader = Files.newBufferedReader(CONFIG_SCHEMA_PATH, StandardCharsets.UTF_8);
-					JsonObject schemaJson = GSON.fromJson(schemaReader, JsonObject.class);
-					String schemaHash = schemaJson.get("gameRulesHash").getAsString();
-					schemaReader.close();
+					try (Reader schemaReader = Files.newBufferedReader(CONFIG_SCHEMA_PATH, StandardCharsets.UTF_8)) {
+						JsonObject schemaJson = GSON.fromJson(schemaReader, JsonObject.class);
+						String schemaHash = schemaJson.get("gameRulesHash").getAsString();
 
-					if (!schemaHash.equals(newSchemaHash)) {
-						LoggingUtils.LOGGER.info("The loaded set of game rules doesn't match the current schema's ones! This schema will be regenerated.");
-						generateNewSchema = true;
+						if (!schemaHash.equals(newSchemaHash)) {
+							LoggingUtils.LOGGER.info("The loaded set of game rules doesn't match the current schema's ones! This schema will be regenerated.");
+							generateNewSchema = true;
+						}
 					}
 				} else {
 					generateNewSchema = true;
@@ -119,12 +119,15 @@ public class ModConfigManager {
 				} else {
 					generateGameRulePropertiesOnServer();
 				}
-				Writer schemaWriter = Files.newBufferedWriter(CONFIG_SCHEMA_PATH, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-				GSON.toJson(createSchemaObject(newSchemaHash), schemaWriter);
-				schemaWriter.close();
+
+				try (Writer schemaWriter = Files.newBufferedWriter(
+					CONFIG_SCHEMA_PATH, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+				)) {
+					GSON.toJson(createSchemaObject(newSchemaHash), schemaWriter);
+				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LoggingUtils.LOGGER.error("Failed to prepare the config JSON schema!", e);
 		}
 	}
 
@@ -172,12 +175,10 @@ public class ModConfigManager {
 	}
 
 	private static void updateConfigFile() {
-		try {
-			var writer = GSON.newJsonWriter(Files.newBufferedWriter(CONFIG_PATH, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING));
+		try (var writer = GSON.newJsonWriter(Files.newBufferedWriter(CONFIG_PATH, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))) {
 			GSON.toJson(config, ModConfig.class, writer);
-			writer.close();
 		} catch (IOException e) {
-			LoggingUtils.LOGGER.error("Failed to update config file!", e.fillInStackTrace());
+			LoggingUtils.LOGGER.error("Failed to update config file!", e);
 		}
 	}
 
