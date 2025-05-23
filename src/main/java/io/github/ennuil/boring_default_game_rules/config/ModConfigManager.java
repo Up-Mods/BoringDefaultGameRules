@@ -94,8 +94,8 @@ public class ModConfigManager {
 			if (config.generate_json_schema()) {
 				if (CONFIG_SCHEMA_PATH.toFile().exists()) {
 					try (Reader schemaReader = Files.newBufferedReader(CONFIG_SCHEMA_PATH, StandardCharsets.UTF_8)) {
-						JsonObject schemaJson = GSON.fromJson(schemaReader, JsonObject.class);
-						String schemaHash = schemaJson.get("gameRulesHash").getAsString();
+						var schemaJson = GSON.fromJson(schemaReader, JsonObject.class);
+						var schemaHash = schemaJson.get("gameRulesHash").getAsString();
 
 						if (!schemaHash.equals(newSchemaHash)) {
 							LoggingUtils.LOGGER.info("The loaded set of game rules doesn't match the current schema's ones! This schema will be regenerated.");
@@ -120,7 +120,7 @@ public class ModConfigManager {
 					generateGameRulePropertiesOnServer();
 				}
 
-				try (Writer schemaWriter = Files.newBufferedWriter(
+				try (Writer	 schemaWriter = Files.newBufferedWriter(
 					CONFIG_SCHEMA_PATH, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
 				)) {
 					GSON.toJson(createSchemaObject(newSchemaHash), schemaWriter);
@@ -195,15 +195,16 @@ public class ModConfigManager {
 					I18n.exists(key.getDescriptionId() + ".description")
 						? Component.translatable(key.getDescriptionId() + ".description").getString()
 						: null,
+					joinFeatureFlagsOnClient(type.requiredFeatures()),
 					type.createRule().get());
 			}
 
 			@Override
 			public void visitInteger(GameRules.Key<GameRules.IntegerValue> key, GameRules.Type<GameRules.IntegerValue> type) {
 				var gameRule = type.createRule();
-				if (gameRule instanceof BoundedIntRule boundedType) {
-					int minimum = ((BoundedIntRuleAccessor) (Object) boundedType).getMinimumValue();
-					int maximum = ((BoundedIntRuleAccessor) (Object) boundedType).getMaximumValue();
+				if (gameRule instanceof BoundedIntRule boundedRule) {
+					int minimum = ((BoundedIntRuleAccessor) (Object) boundedRule).getMinimumValue();
+					int maximum = ((BoundedIntRuleAccessor) (Object) boundedRule).getMaximumValue();
 					addIntegerGameRule(
 						key.getId(),
 						I18n.get(key.getDescriptionId()),
@@ -211,7 +212,7 @@ public class ModConfigManager {
 							? Component.translatable(key.getDescriptionId() + ".description").getString()
 							: null,
 						joinFeatureFlagsOnClient(type.requiredFeatures()),
-						boundedType.get(),
+						boundedRule.get(),
 						minimum,
 						maximum);
 				} else {
@@ -222,7 +223,7 @@ public class ModConfigManager {
 							? Component.translatable(key.getDescriptionId() + ".description").getString()
 							: null,
 						joinFeatureFlagsOnClient(type.requiredFeatures()),
-						type.createRule().get(),
+						gameRule.get(),
 						type.argument.get() instanceof IntegerArgumentType intArgType ? intArgType.getMinimum() : null,
 						type.argument.get() instanceof IntegerArgumentType intArgType ? intArgType.getMaximum() : null);
 				}
@@ -239,6 +240,7 @@ public class ModConfigManager {
 					I18n.exists(key.getDescriptionId() + ".description")
 						? Component.translatable(key.getDescriptionId() + ".description").getString()
 						: null,
+					joinFeatureFlagsOnClient(type.requiredFeatures()),
 					doubleRule.get(),
 					minimum,
 					maximum
@@ -254,6 +256,7 @@ public class ModConfigManager {
 					I18n.exists(key.getDescriptionId() + ".description")
 						? Component.translatable(key.getDescriptionId() + ".description").getString()
 						: null,
+					joinFeatureFlagsOnClient(type.requiredFeatures()),
 					enumRule.get(),
 					((EnumRuleAccessor<E>) (Object) enumRule).getSupportedValues());
 			}
@@ -273,20 +276,22 @@ public class ModConfigManager {
 					key.getId(),
 					language.getOrDefault(key.getDescriptionId()),
 					language.getOrDefault(key.getDescriptionId() + ".description", null),
+					joinFeatureFlagsOnServer(type.requiredFeatures(), language),
 					type.createRule().get());
 			}
 
 			@Override
 			public void visitInteger(GameRules.Key<GameRules.IntegerValue> key, GameRules.Type<GameRules.IntegerValue> type) {
-				if (type.createRule() instanceof BoundedIntRule boundedType) {
-					int minimum = ((BoundedIntRuleAccessor) (Object) boundedType).getMinimumValue();
-					int maximum = ((BoundedIntRuleAccessor) (Object) boundedType).getMaximumValue();
+				var gameRule = type.createRule();
+				if (gameRule instanceof BoundedIntRule boundedRule) {
+					int minimum = ((BoundedIntRuleAccessor) (Object) boundedRule).getMinimumValue();
+					int maximum = ((BoundedIntRuleAccessor) (Object) boundedRule).getMaximumValue();
 					addIntegerGameRule(
 						key.getId(),
 						language.getOrDefault(key.getDescriptionId()),
 						language.getOrDefault(key.getDescriptionId() + ".description", null),
 						joinFeatureFlagsOnServer(type.requiredFeatures(), language),
-						boundedType.get(),
+						boundedRule.get(),
 						minimum,
 						maximum);
 				} else {
@@ -295,7 +300,7 @@ public class ModConfigManager {
 						language.getOrDefault(key.getDescriptionId()),
 						language.getOrDefault(key.getDescriptionId() + ".description", null),
 						joinFeatureFlagsOnServer(type.requiredFeatures(), language),
-						type.createRule().get(),
+						gameRule.get(),
 						type.argument.get() instanceof IntegerArgumentType intArgType ? intArgType.getMinimum() : null,
 						type.argument.get() instanceof IntegerArgumentType intArgType ? intArgType.getMaximum() : null);
 				}
@@ -303,13 +308,14 @@ public class ModConfigManager {
 
 			@Override
 			public void visitDouble(GameRules.Key<DoubleRule> key, GameRules.Type<DoubleRule> type) {
-				DoubleRule doubleRule = type.createRule();
+				var doubleRule = type.createRule();
 				double maximum = ((DoubleRuleAccessor) (Object) doubleRule).getMaximumValue();
 				double minimum = ((DoubleRuleAccessor) (Object) doubleRule).getMinimumValue();
 				addDoubleGameRule(
 					key.getId(),
 					language.getOrDefault(key.getDescriptionId()),
 					language.getOrDefault(key.getDescriptionId() + ".description", null),
+					joinFeatureFlagsOnServer(type.requiredFeatures(), language),
 					doubleRule.get(),
 					minimum,
 					maximum);
@@ -317,11 +323,12 @@ public class ModConfigManager {
 
 			@Override
 			public <E extends Enum<E>> void visitEnum(GameRules.Key<EnumRule<E>> key, GameRules.Type<EnumRule<E>> type) {
-				EnumRule<E> enumRule = type.createRule();
+				var enumRule = type.createRule();
 				addEnumGameRule(
 					key.getId(),
 					language.getOrDefault(key.getDescriptionId()),
 					language.getOrDefault(key.getDescriptionId() + ".description", null),
+					joinFeatureFlagsOnServer(type.requiredFeatures(), language),
 					enumRule.get(),
 					((EnumRuleAccessor<E>) (Object) enumRule).getSupportedValues());
 			}
@@ -354,7 +361,7 @@ public class ModConfigManager {
 
 		propertiesObject.add("$schema", schemaPropertyObject);
 
-		JsonObject defaultGameRulesObject = new JsonObject();
+		var defaultGameRulesObject = new JsonObject();
 		defaultGameRulesObject.addProperty("type", "object");
 		defaultGameRulesObject.addProperty("title", "Default Game Rules");
 		defaultGameRulesObject.addProperty("description", "Defines the default game rules, whose values will override the original default values. This mod provides game rule suggestions by generating a JSON schema.");
@@ -362,7 +369,7 @@ public class ModConfigManager {
 
 		propertiesObject.add("default_game_rules", defaultGameRulesObject);
 
-		JsonObject generateJSONSchemaObject = new JsonObject();
+		var generateJSONSchemaObject = new JsonObject();
 		generateJSONSchemaObject.addProperty("type", "boolean");
 		generateJSONSchemaObject.addProperty("title", "Generate JSON Schema");
 		generateJSONSchemaObject.addProperty("description", "If enabled, this mod will generate a JSON schema in order to aid with configuration. You may disable this if you don't plan to change the settings and want to save space, and once disabled, you can safely remove both the schema and the \"$schema\" property.");
@@ -371,7 +378,7 @@ public class ModConfigManager {
 
 		schemaObject.add("properties", propertiesObject);
 
-		JsonArray requiredArray = new JsonArray();
+		var requiredArray = new JsonArray();
 		requiredArray.add("default_game_rules");
 		requiredArray.add("generate_json_schema");
 
@@ -380,23 +387,35 @@ public class ModConfigManager {
 		return schemaObject;
 	}
 
-	private static void addBooleanGameRule(String name, String visualName, @Nullable String description, boolean defaultValue) {
-		JsonObject booleanGameRuleObject = new JsonObject();
+	private static void addBooleanGameRule(String name, String visualName, @Nullable String description, String set, boolean defaultValue) {
+		var booleanGameRuleObject = new JsonObject();
 		booleanGameRuleObject.addProperty("type", "boolean");
 		booleanGameRuleObject.addProperty("title", visualName);
+
+		var descriptionString = "";
 		if (description != null) {
-			booleanGameRuleObject.addProperty("description", description);
+			descriptionString += description;
 		}
+
+		if (!set.isEmpty()) {
+			descriptionString += ((description != null) ? " " : "") + "Exclusive on: " + set;
+		}
+
+		if (!descriptionString.isEmpty()) {
+			booleanGameRuleObject.addProperty("description", descriptionString);
+		}
+
 		booleanGameRuleObject.addProperty("default", defaultValue);
 
 		defaultGameRulesProperties.add(name, booleanGameRuleObject);
 	}
 
 	private static void addIntegerGameRule(String name, String visualName, @Nullable String description, String set, int defaultValue, @Nullable Integer minimum, @Nullable Integer maximum) {
-		JsonObject integerGameRuleObject = new JsonObject();
+		var integerGameRuleObject = new JsonObject();
 		integerGameRuleObject.addProperty("type", "integer");
 		integerGameRuleObject.addProperty("title", visualName);
-		String descriptionString = "";
+
+		var descriptionString = "";
 		if (description != null) {
 			descriptionString += description;
 		}
@@ -422,13 +441,24 @@ public class ModConfigManager {
 		defaultGameRulesProperties.add(name, integerGameRuleObject);
 	}
 
-	private static void addDoubleGameRule(String name, String visualName, @Nullable String description, double defaultValue, double minimum, double maximum) {
-		JsonObject doubleGameRuleObject = new JsonObject();
+	private static void addDoubleGameRule(String name, String visualName, @Nullable String description, String set, double defaultValue, double minimum, double maximum) {
+		var doubleGameRuleObject = new JsonObject();
 		doubleGameRuleObject.addProperty("type", "number");
 		doubleGameRuleObject.addProperty("title", visualName);
+
+		var descriptionString = "";
 		if (description != null) {
-			doubleGameRuleObject.addProperty("description", description);
+			descriptionString += description;
 		}
+
+		if (!set.isEmpty()) {
+			descriptionString += ((description != null) ? " " : "") + "Exclusive on: " + set;
+		}
+
+		if (!descriptionString.isEmpty()) {
+			doubleGameRuleObject.addProperty("description", descriptionString);
+		}
+
 		doubleGameRuleObject.addProperty("default", defaultValue);
 
 		if (minimum != Double.MIN_NORMAL) {
@@ -442,23 +472,34 @@ public class ModConfigManager {
 		defaultGameRulesProperties.add(name, doubleGameRuleObject);
 	}
 
-	private static <E extends Enum<E>> void addEnumGameRule(String name, String visualName, @Nullable String description, E defaultValue, List<E> supportedValues) {
-		JsonObject doubleGameRuleObject = new JsonObject();
-		doubleGameRuleObject.addProperty("type", "string");
-		doubleGameRuleObject.addProperty("title", visualName);
-		if (description != null) {
-			doubleGameRuleObject.addProperty("description", description);
-		}
-		doubleGameRuleObject.addProperty("default", defaultValue.name());
+	private static <E extends Enum<E>> void addEnumGameRule(String name, String visualName, @Nullable String description, String set, E defaultValue, List<E> supportedValues) {
+		var enumGameRuleObject = new JsonObject();
+		enumGameRuleObject.addProperty("type", "string");
+		enumGameRuleObject.addProperty("title", visualName);
 
-		JsonArray supportedEnumValues = new JsonArray();
+		var descriptionString = "";
+		if (description != null) {
+			descriptionString += description;
+		}
+
+		if (!set.isEmpty()) {
+			descriptionString += ((description != null) ? " " : "") + "Exclusive on: " + set;
+		}
+
+		if (!descriptionString.isEmpty()) {
+			enumGameRuleObject.addProperty("description", descriptionString);
+		}
+
+		enumGameRuleObject.addProperty("default", defaultValue.name());
+
+		var supportedEnumValues = new JsonArray();
 		for (E supportedValue : supportedValues) {
 			supportedEnumValues.add(supportedValue.name());
 		}
 
-		doubleGameRuleObject.add("enum", supportedEnumValues);
+		enumGameRuleObject.add("enum", supportedEnumValues);
 
-		defaultGameRulesProperties.add(name, doubleGameRuleObject);
+		defaultGameRulesProperties.add(name, enumGameRuleObject);
 	}
 
 	public static void generateGameRulesHash() {
