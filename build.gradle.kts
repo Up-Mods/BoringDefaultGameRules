@@ -4,7 +4,7 @@ plugins {
 }
 
 version = "2.0.0+1.21.5"
-group = "io.github.ennuil"
+group = "page.langeweile"
 
 repositories {
 	maven("https://maven.parchmentmc.org")

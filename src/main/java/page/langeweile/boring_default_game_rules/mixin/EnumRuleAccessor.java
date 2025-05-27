@@ -1,4 +1,4 @@
-package io.github.ennuil.boring_default_game_rules.mixin;
+package page.langeweile.boring_default_game_rules.mixin;
 
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 import org.spongepowered.asm.mixin.Mixin;

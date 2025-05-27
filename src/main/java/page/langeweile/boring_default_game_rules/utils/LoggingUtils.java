@@ -1,4 +1,4 @@
-package io.github.ennuil.boring_default_game_rules.utils;
+package page.langeweile.boring_default_game_rules.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

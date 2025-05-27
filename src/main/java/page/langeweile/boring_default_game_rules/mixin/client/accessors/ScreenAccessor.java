@@ -1,4 +1,4 @@
-package io.github.ennuil.boring_default_game_rules.mixin.client.accessors;
+package page.langeweile.boring_default_game_rules.mixin.client.accessors;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;

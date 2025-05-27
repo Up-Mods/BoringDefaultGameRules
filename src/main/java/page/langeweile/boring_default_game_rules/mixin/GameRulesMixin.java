@@ -1,15 +1,15 @@
-package io.github.ennuil.boring_default_game_rules.mixin;
+package page.langeweile.boring_default_game_rules.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 import net.minecraft.world.level.GameRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import page.langeweile.boring_default_game_rules.config.ModConfigManager;
 
 import java.util.Map;
 

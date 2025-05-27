@@ -1,4 +1,4 @@
-package io.github.ennuil.boring_default_game_rules.config;
+package page.langeweile.boring_default_game_rules.config;
 
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
@@ -7,10 +7,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import io.github.ennuil.boring_default_game_rules.mixin.BoundedIntRuleAccessor;
-import io.github.ennuil.boring_default_game_rules.mixin.DoubleRuleAccessor;
-import io.github.ennuil.boring_default_game_rules.mixin.EnumRuleAccessor;
-import io.github.ennuil.boring_default_game_rules.utils.LoggingUtils;
 import net.fabricmc.fabric.api.gamerule.v1.FabricGameRuleVisitor;
 import net.fabricmc.fabric.api.gamerule.v1.rule.DoubleRule;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
@@ -23,6 +19,10 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.GameRules;
 import org.jetbrains.annotations.Nullable;
+import page.langeweile.boring_default_game_rules.mixin.BoundedIntRuleAccessor;
+import page.langeweile.boring_default_game_rules.mixin.DoubleRuleAccessor;
+import page.langeweile.boring_default_game_rules.mixin.EnumRuleAccessor;
+import page.langeweile.boring_default_game_rules.utils.LoggingUtils;
 
 import java.io.IOException;
 import java.io.Reader;

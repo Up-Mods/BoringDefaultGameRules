@@ -1,4 +1,4 @@
-package io.github.ennuil.boring_default_game_rules.config;
+package page.langeweile.boring_default_game_rules.config;
 
 import java.util.HashMap;
 

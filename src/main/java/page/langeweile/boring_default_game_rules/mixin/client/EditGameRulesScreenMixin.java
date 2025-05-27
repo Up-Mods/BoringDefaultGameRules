@@ -1,8 +1,6 @@
-package io.github.ennuil.boring_default_game_rules.mixin.client;
+package page.langeweile.boring_default_game_rules.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
-import io.github.ennuil.boring_default_game_rules.screen.EditDefaultGameRulesScreen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
@@ -20,6 +18,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import page.langeweile.boring_default_game_rules.config.ModConfigManager;
+import page.langeweile.boring_default_game_rules.screen.EditDefaultGameRulesScreen;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,11 +1,11 @@
-package io.github.ennuil.boring_default_game_rules.modmenu;
+package page.langeweile.boring_default_game_rules.modmenu;
 
-import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
-import io.github.ennuil.boring_default_game_rules.screen.EditDefaultGameRulesScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.GameRules;
+import page.langeweile.boring_default_game_rules.config.ModConfigManager;
+import page.langeweile.boring_default_game_rules.screen.EditDefaultGameRulesScreen;
 
 // By having a fake screen, the screen caching, which is undesirable for us, is busted.
 public class ModMenuFakeScreen extends Screen {

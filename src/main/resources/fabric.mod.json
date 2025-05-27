@@ -20,9 +20,9 @@
 	},
 	"environment": "*",
 	"entrypoints": {
-		"client": ["io.github.ennuil.boring_default_game_rules.events.LoadConfigEvent"],
-		"server": ["io.github.ennuil.boring_default_game_rules.events.LoadConfigEvent"],
-		"modmenu": ["io.github.ennuil.boring_default_game_rules.modmenu.ModMenuEntry"]
+		"client": ["page.langeweile.boring_default_game_rules.events.LoadConfigEvent"],
+		"server": ["page.langeweile.boring_default_game_rules.events.LoadConfigEvent"],
+		"modmenu": ["page.langeweile.boring_default_game_rules.modmenu.ModMenuEntry"]
 	},
 	"mixins": ["boring_default_game_rules.mixins.json"],
 	"accessWidener": "boring_default_game_rules.accesswidener",

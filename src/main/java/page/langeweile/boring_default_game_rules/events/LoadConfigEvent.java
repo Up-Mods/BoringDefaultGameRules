@@ -1,8 +1,8 @@
-package io.github.ennuil.boring_default_game_rules.events;
+package page.langeweile.boring_default_game_rules.events;
 
-import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.DedicatedServerModInitializer;
+import page.langeweile.boring_default_game_rules.config.ModConfigManager;
 
 public class LoadConfigEvent implements ClientModInitializer, DedicatedServerModInitializer {
 	@Override

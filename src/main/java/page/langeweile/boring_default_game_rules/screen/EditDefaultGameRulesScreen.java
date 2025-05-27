@@ -1,7 +1,5 @@
-package io.github.ennuil.boring_default_game_rules.screen;
+package page.langeweile.boring_default_game_rules.screen;
 
-import io.github.ennuil.boring_default_game_rules.config.ModConfigManager;
-import io.github.ennuil.boring_default_game_rules.mixin.client.accessors.ScreenAccessor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
@@ -11,6 +9,8 @@ import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.GameRules;
+import page.langeweile.boring_default_game_rules.config.ModConfigManager;
+import page.langeweile.boring_default_game_rules.mixin.client.accessors.ScreenAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
