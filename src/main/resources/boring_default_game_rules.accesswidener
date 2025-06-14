@@ -1,5 +1,7 @@
 accessWidener v2 named
 
+mutable field net/minecraft/client/gui/screens/Screen title Lnet/minecraft/network/chat/Component;
+
 accessible field net/minecraft/client/gui/screens/worldselection/EditGameRulesScreen ruleList Lnet/minecraft/client/gui/screens/worldselection/EditGameRulesScreen$RuleList;
 accessible field net/minecraft/world/level/GameRules GAME_RULE_TYPES Ljava/util/Map;
 accessible field net/minecraft/world/level/GameRules$Type argument Ljava/util/function/Supplier;

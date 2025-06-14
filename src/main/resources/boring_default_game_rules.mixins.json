@@ -3,8 +3,7 @@
 	"package": "page.langeweile.boring_default_game_rules.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"client": [
-		"client.EditGameRulesScreenMixin",
-		"client.accessors.ScreenAccessor"
+		"client.EditGameRulesScreenMixin"
 	],
 	"mixins": [
 		"BoundedIntRuleAccessor",

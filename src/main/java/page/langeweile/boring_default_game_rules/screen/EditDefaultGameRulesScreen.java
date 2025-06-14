@@ -10,7 +10,6 @@ import net.minecraft.client.gui.screens.worldselection.EditGameRulesScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.GameRules;
 import page.langeweile.boring_default_game_rules.config.ModConfigManager;
-import page.langeweile.boring_default_game_rules.mixin.client.accessors.ScreenAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ public class EditDefaultGameRulesScreen extends EditGameRulesScreen {
 	public EditDefaultGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> exitCallback) {
 		super(gameRules, exitCallback);
 		// You can't stop destiny, `final` keyword!
-		((ScreenAccessor) this).setTitle(Component.translatable("boring_default_game_rules.edit_default_game_rules.title"));
+		this.title = Component.translatable("boring_default_game_rules.edit_default_game_rules.title");
 	}
 
 	@Override
