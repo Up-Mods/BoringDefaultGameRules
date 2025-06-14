@@ -64,11 +64,11 @@ java {
 // If you plan to use a different file for the license, don't forget to change the file name here!
 tasks.named<Jar>("jar").configure {
 	val name = project.name
-	inputs.files("LICENSE.md")
+	inputs.files("LICENSE")
 	inputs.property("name", name)
 
-	from("LICENSE.md") {
-		rename { "LICENSE_${name}.md" }
+	from("LICENSE") {
+		rename { "LICENSE_${name}" }
 	}
 }
 
