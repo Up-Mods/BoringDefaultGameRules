@@ -10,8 +10,8 @@
 	],
 	"contact": {
 		"homepage": "https://modrinth.com/mod/boring-default-game-rules",
-		"issues": "https://github.com/EnnuiL/BoringDefaultGameRules/issues",
-		"sources": "https://github.com/EnnuiL/BoringDefaultGameRules"
+		"issues": "https://github.com/Up-Mods/BoringDefaultGameRules/issues",
+		"sources": "https://github.com/Up-Mods/BoringDefaultGameRules"
 	},
 	"license": "MIT",
 	"icon": {
